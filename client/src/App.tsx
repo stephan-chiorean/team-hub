@@ -1,27 +1,49 @@
 import React from "react";
 import { Layout } from "antd";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Header from "./components/Header/Header";
 import Sidebar from "./components/Sidebar/Sidebar";
+import Dashboard from "./pages/Dashboard";
+import TeamManagement from "./pages/TeamManagement";
+import Projects from "./pages/Projects";
+import Recruitment from "./pages/Recruitment";
+import Onboarding from "./pages/Onboarding";
+import ReportsAnalytics from "./pages/ReportsAnalytics";
+import Settings from "./pages/Settings";
 
 const { Content, Footer } = Layout;
 
 function App() {
   return (
-    <Layout style={{ minHeight: "100vh" }}>
-      <Sidebar />
-      <Layout>
-        <Header />
-        <Content
-          style={{ margin: "24px 16px 0", padding: "24px", background: "#fff" }}
-        >
-          {/* Add your main content here */}
-          Main Content
-        </Content>
-        <Footer style={{ textAlign: "center" }}>
-          Team Hub ©2023 Created by Your Company
-        </Footer>
+    <Router>
+      <Layout style={{ minHeight: "100vh" }}>
+        <Sidebar />
+        <Layout>
+          <Header />
+          <Content
+            style={{
+              margin: "24px 16px 0",
+              padding: "24px",
+              background: "#fff",
+            }}
+          >
+            <Routes>
+              <Route path="/dashboard" Component={Dashboard} />
+              <Route path="/team-management" Component={TeamManagement} />
+              <Route path="/projects" Component={Projects} />
+              <Route path="/recruitment" Component={Recruitment} />
+              <Route path="/onboarding" Component={Onboarding} />
+              <Route path="/reports-analytics" Component={ReportsAnalytics} />
+              <Route path="/settings" Component={Settings} />
+              <Route path="/" Component={Dashboard} />
+            </Routes>
+          </Content>
+          <Footer style={{ textAlign: "center" }}>
+            Team Hub ©2023 Created by Your Company
+          </Footer>
+        </Layout>
       </Layout>
-    </Layout>
+    </Router>
   );
 }
 

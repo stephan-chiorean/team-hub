@@ -9,6 +9,7 @@ import {
   BarChartOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
+import { Link } from "react-router-dom";
 import teamHubLogo from "../../assets/teamHubLogo.svg";
 
 const { Sider } = Layout;
@@ -20,15 +21,10 @@ const Sidebar = () => {
       style={{
         minHeight: "100vh",
         backgroundColor: "#001529",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
-      <div style={{ paddingRight: "25px", textAlign: "center" }}>
-        <img
-          src={teamHubLogo}
-          alt="Team Hub Logo"
-          style={{ maxWidth: 200, maxHeight: 100 }}
-        />
-      </div>
       <Menu
         theme="dark"
         mode="inline"
@@ -36,41 +32,70 @@ const Sidebar = () => {
         style={{ flex: 1 }}
       >
         <Menu.Item key="1" icon={<DashboardOutlined />}>
-          Dashboard
+          <Link to="/dashboard">Dashboard</Link>
         </Menu.Item>
         <Menu.SubMenu
           key="sub1"
           icon={<TeamOutlined />}
           title="Team Management"
         >
-          <Menu.Item key="2">View/manage team members</Menu.Item>
-          <Menu.Item key="3">Role assignments</Menu.Item>
+          <Menu.Item key="2">
+            <Link to="/team-management">View/manage team members</Link>
+          </Menu.Item>
+          <Menu.Item key="3">
+            <Link to="/team-management/roles">Role assignments</Link>
+          </Menu.Item>
         </Menu.SubMenu>
         <Menu.SubMenu key="sub2" icon={<ProjectOutlined />} title="Projects">
-          <Menu.Item key="4">Access ongoing and completed projects</Menu.Item>
-          <Menu.Item key="5">Assign tasks</Menu.Item>
+          <Menu.Item key="4">
+            <Link to="/projects">Access ongoing and completed projects</Link>
+          </Menu.Item>
+          <Menu.Item key="5">
+            <Link to="/projects/tasks">Assign tasks</Link>
+          </Menu.Item>
         </Menu.SubMenu>
         <Menu.SubMenu key="sub3" icon={<UserAddOutlined />} title="Recruitment">
-          <Menu.Item key="6">Sourcing personas</Menu.Item>
-          <Menu.Item key="7">Job requisitions</Menu.Item>
-          <Menu.Item key="8">Candidate interviews</Menu.Item>
+          <Menu.Item key="6">
+            <Link to="/recruitment">Sourcing personas</Link>
+          </Menu.Item>
+          <Menu.Item key="7">
+            <Link to="/recruitment/job-requisitions">Job requisitions</Link>
+          </Menu.Item>
+          <Menu.Item key="8">
+            <Link to="/recruitment/interviews">Candidate interviews</Link>
+          </Menu.Item>
         </Menu.SubMenu>
         <Menu.Item key="9" icon={<FileTextOutlined />}>
-          Onboarding
+          <Link to="/onboarding">Onboarding</Link>
         </Menu.Item>
         <Menu.SubMenu
           key="sub4"
           icon={<BarChartOutlined />}
           title="Reports/Analytics"
         >
-          <Menu.Item key="10">Team performance metrics</Menu.Item>
-          <Menu.Item key="11">Project progress</Menu.Item>
+          <Menu.Item key="10">
+            <Link to="/reports-analytics">Team performance metrics</Link>
+          </Menu.Item>
+          <Menu.Item key="11">
+            <Link to="/reports-analytics/progress">Project progress</Link>
+          </Menu.Item>
         </Menu.SubMenu>
         <Menu.SubMenu key="sub5" icon={<SettingOutlined />} title="Settings">
-          <Menu.Item key="12">General settings for the user or team</Menu.Item>
-          <Menu.Item key="13">Themes, preferences, etc.</Menu.Item>
+          <Menu.Item key="12">
+            <Link to="/settings">General settings for the user or team</Link>
+          </Menu.Item>
+          <Menu.Item key="13">
+            <Link to="/settings/themes">Themes, preferences, etc.</Link>
+          </Menu.Item>
         </Menu.SubMenu>
       </Menu>
+      <div style={{ padding: "20px", textAlign: "center", marginTop: "auto" }}>
+        <img
+          src={teamHubLogo}
+          alt="Team Hub Logo"
+          style={{ maxWidth: "100%", marginBottom: "20px" }}
+        />
+      </div>
     </Sider>
   );
 };
