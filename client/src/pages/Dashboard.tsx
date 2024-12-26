@@ -1,5 +1,6 @@
 import React from "react";
 import { Card, Row, Col, Button, Badge, List } from "antd";
+import { Route, useNavigate } from "react-router-dom";
 import "./Dashboard/Dashboard.css"; // Import custom CSS for positioning the badge
 
 const cardData = [
@@ -15,6 +16,7 @@ const cardData = [
       "Career Fairs",
       "Internal Mobility",
     ],
+    route: "/sourcing",
   },
   {
     title: "Referrals",
@@ -28,6 +30,7 @@ const cardData = [
       "Top Referrers",
       "Referral Analytics",
     ],
+    route: "/referrals",
   },
   {
     title: "Skill Development",
@@ -41,6 +44,7 @@ const cardData = [
       "E-Learning",
       "Skill Assessments",
     ],
+    route: "/skill-development",
   },
   {
     title: "Team Engagement",
@@ -54,6 +58,7 @@ const cardData = [
       "Wellness Programs",
       "Engagement Analytics",
     ],
+    route: "/team-engagement",
   },
   {
     title: "Documentation",
@@ -67,6 +72,7 @@ const cardData = [
       "Forms",
       "Knowledge Base",
     ],
+    route: "/documentation",
   },
   {
     title: "Projects",
@@ -80,10 +86,16 @@ const cardData = [
       "Project Reports",
       "Project Archives",
     ],
+    route: "/projects",
   },
 ];
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+  const handleExplore = (route: string) => {
+    navigate(route); // Replace history.push with navigate
+  };
+
   return (
     <div style={{ padding: "24px" }}>
       <Row gutter={[16, 16]}>
@@ -100,7 +112,11 @@ const Dashboard = () => {
                     style={{ display: "flex", justifyContent: "space-between" }}
                   >
                     {card.title}
-                    <Button type="primary" style={{ padding: 10 }}>
+                    <Button
+                      type="primary"
+                      style={{ padding: 10 }}
+                      onClick={() => handleExplore(card.route)}
+                    >
                       Explore
                     </Button>
                   </div>
