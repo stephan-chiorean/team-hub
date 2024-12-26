@@ -12,6 +12,8 @@ import ReportsAnalytics from "./pages/ReportsAnalytics";
 import Settings from "./pages/Settings";
 import Referrals from "./pages/Referrals";
 import Sourcing from "./pages/Sourcing";
+import AddReferral from "./pages/AddReferral";
+import Documentation from "./pages/Documentation";
 
 const { Content, Footer } = Layout;
 
@@ -31,6 +33,7 @@ function App() {
           >
             <Routes>
               <Route path="/dashboard" Component={Dashboard} />
+              <Route path="/documentation" Component={Documentation} />
               <Route path="/team-management" Component={TeamManagement} />
               <Route path="/projects" Component={Projects} />
               <Route path="/recruitment" Component={Recruitment} />
@@ -39,6 +42,7 @@ function App() {
               <Route path="/settings" Component={Settings} />
               <Route path="/referrals" Component={Referrals} />
               <Route path="/sourcing" Component={Sourcing} />
+              <Route path="/add-referral/:team" Component={AddReferral} />
               <Route path="/" Component={Dashboard} />
             </Routes>
           </Content>

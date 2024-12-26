@@ -1,255 +1,135 @@
-import React, { useState } from "react";
-import {
-  Button,
-  Modal,
-  Form,
-  Input,
-  Card,
-  Row,
-  Col,
-  Dropdown,
-  Menu,
-  Tooltip,
-} from "antd";
-import {
-  EllipsisOutlined,
-  PlusOutlined,
-  DownOutlined,
-} from "@ant-design/icons";
-import { useDrag, useDrop, DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
-import update from "immutability-helper";
+import React, { useState, useCallback } from "react";
+import ReactFlow, {
+  ReactFlowProvider,
+  addEdge,
+  MiniMap,
+  Controls,
+  Background,
+  Connection,
+  Edge,
+  Node,
+  useReactFlow,
+  NodeChange,
+  EdgeChange,
+  applyNodeChanges,
+  applyEdgeChanges,
+} from "react-flow-renderer";
 
-const ItemType = "CARD";
+const initialNodes: Node[] = [
+  {
+    id: "1",
+    type: "input", // input node
+    data: { label: "Welcome" },
+    position: { x: 250, y: 5 },
+  },
+  {
+    id: "2",
+    data: { label: "Introduction" },
+    position: { x: 100, y: 100 },
+  },
+  {
+    id: "3",
+    data: { label: "Training" },
+    position: { x: 400, y: 100 },
+  },
+  {
+    id: "4",
+    type: "output", // output node
+    data: { label: "Completion" },
+    position: { x: 250, y: 200 },
+  },
+];
 
-const DraggableCard = ({
-  template,
-  index,
-  moveCard,
-  handleView,
-  menu,
-}: {
-  template: any;
-  index: any;
-  moveCard: any;
-  handleView: any;
-  menu: any;
-}) => {
-  const ref = React.useRef(null);
-
-  const [, drop] = useDrop({
-    accept: ItemType,
-    hover(item: { index: number }) {
-      if (item.index !== index) {
-        moveCard(item.index, index);
-        item.index = index;
-      }
-    },
-  });
-
-  const [{ isDragging }, drag] = useDrag({
-    type: ItemType,
-    item: { index },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-  });
-
-  drag(drop(ref));
-
-  return (
-    <Col span={8} ref={ref} style={{ opacity: isDragging ? 0.5 : 1 }}>
-      <Card
-        style={{ cursor: "pointer" }}
-        title={template.name}
-        bordered={false}
-        extra={
-          <Dropdown overlay={menu(template)} trigger={["click"]}>
-            <EllipsisOutlined
-              style={{ fontSize: "24px" }}
-              onClick={(e) => e.stopPropagation()}
-            />
-          </Dropdown>
-        }
-        onClick={() => handleView(template)}
-      >
-        {template.description}
-      </Card>
-    </Col>
-  );
-};
+const initialEdges: Edge[] = [
+  { id: "e1-2", source: "1", target: "2", animated: true },
+  { id: "e1-3", source: "1", target: "3", animated: true },
+  { id: "e2-4", source: "2", target: "4", animated: true },
+  { id: "e3-4", source: "3", target: "4", animated: true },
+];
 
 const Onboarding = () => {
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [isViewModalVisible, setIsViewModalVisible] = useState(false);
-  const [templates, setTemplates] = useState<any[]>([]);
-  const [editingTemplate, setEditingTemplate] = useState<any | null>(null);
-  const [viewingTemplate, setViewingTemplate] = useState<any | null>(null);
-  const [selectedTeam, setSelectedTeam] = useState<string>("Authorizers");
+  const [nodes, setNodes] = useState<Node[]>(initialNodes);
+  const [edges, setEdges] = useState<Edge[]>(initialEdges);
+  const reactFlowInstance = useReactFlow();
 
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
+  const onConnect = useCallback(
+    (params: Connection | Edge) => setEdges((eds) => addEdge(params, eds)),
+    []
+  );
 
-  const handleOk = (values: any) => {
-    if (editingTemplate) {
-      setTemplates(
-        templates.map((template) =>
-          template === editingTemplate ? values : template
+  const onNodesChange = useCallback(
+    (changes: NodeChange[]) =>
+      setNodes(
+        (nds) => applyNodeChanges(changes, nds) // Use `applyNodeChanges` from the library
+      ),
+    []
+  );
+
+  const onEdgesChange = useCallback(
+    (changes: EdgeChange[]) =>
+      setEdges(
+        (eds) => applyEdgeChanges(changes, eds) // Use `applyEdgeChanges` from the library
+      ),
+    []
+  );
+
+  const onNodeDragStop = useCallback(
+    (event: React.MouseEvent | React.TouchEvent, node: Node) => {
+      setNodes((nds) =>
+        nds.map((n) =>
+          n.id === node.id ? { ...n, position: node.position } : n
         )
       );
-      setEditingTemplate(null);
-    } else {
-      setTemplates([...templates, values]);
-    }
-    setIsModalVisible(false);
-  };
-
-  const handleCancel = () => {
-    setIsModalVisible(false);
-    setEditingTemplate(null);
-  };
-
-  const handleEdit = (template: any) => {
-    setEditingTemplate(template);
-    setIsModalVisible(true);
-  };
-
-  const handleDelete = (template: any) => {
-    setTemplates(templates.filter((t) => t !== template));
-  };
-
-  const handleView = (template: any) => {
-    setViewingTemplate(template);
-    setIsViewModalVisible(true);
-  };
-
-  const handleViewCancel = () => {
-    setIsViewModalVisible(false);
-    setViewingTemplate(null);
-  };
-
-  const moveCard = (fromIndex: number, toIndex: number) => {
-    const card = templates[fromIndex];
-    setTemplates(
-      update(templates, {
-        $splice: [
-          [fromIndex, 1],
-          [toIndex, 0, card],
-        ],
-      })
-    );
-  };
-
-  const menu = (template: any) => (
-    <Menu>
-      <Menu.Item onClick={() => handleEdit(template)}>Edit</Menu.Item>
-      <Menu.Item onClick={() => handleDelete(template)}>Delete</Menu.Item>
-    </Menu>
+    },
+    []
   );
 
-  const teamMenu = (
-    <Menu
-      onClick={(e) => {
-        setSelectedTeam(e.key);
-      }}
-    >
-      <Menu.Item key="Authorizers">Authorizers</Menu.Item>
-      <Menu.Item key="Dynamics">Dynamics</Menu.Item>
-      <Menu.SubMenu key="Commanders" title="Commanders">
-        <Menu.Item key="Commanders - Stream">Stream</Menu.Item>
-        <Menu.Item key="Commanders - Core">Core</Menu.Item>
-      </Menu.SubMenu>
-    </Menu>
-  );
+  const addNode = () => {
+    const newNode: Node = {
+      id: (nodes.length + 1).toString(),
+      data: { label: `Node ${nodes.length + 1}` },
+      position: { x: Math.random() * 400, y: Math.random() * 400 },
+    };
+    setNodes((nds) => nds.concat(newNode));
+  };
+
+  const fitView = useCallback(() => {
+    reactFlowInstance.fitView();
+  }, [reactFlowInstance]);
 
   return (
-    <DndProvider backend={HTML5Backend}>
-      <div className="zoom-container">
-        <div style={{ padding: "24px" }}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              marginBottom: "16px",
-            }}
-          >
-            <div>
-              Team:{" "}
-              <Dropdown overlay={teamMenu}>
-                <Button>
-                  {selectedTeam} <DownOutlined />
-                </Button>
-              </Dropdown>
-            </div>
-            <Button type="primary" onClick={showModal}>
-              Create New Template
-            </Button>
-          </div>
-          <Row gutter={16}>
-            {templates.map((template, index) => (
-              <DraggableCard
-                key={index}
-                index={index}
-                template={template}
-                moveCard={moveCard}
-                handleView={handleView}
-                menu={menu}
-              />
-            ))}
-          </Row>
-          <Modal
-            title={editingTemplate ? "Edit Template" : "Create New Template"}
-            visible={isModalVisible}
-            onCancel={handleCancel}
-            footer={null}
-          >
-            <Form
-              initialValues={{
-                name: editingTemplate?.name || "",
-                description: editingTemplate?.description || "",
-              }}
-              onFinish={handleOk}
-            >
-              <Form.Item
-                name="name"
-                label="Template Name"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input the template name!",
-                  },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-              <Form.Item
-                name="description"
-                label="Description"
-                rules={[
-                  { required: true, message: "Please input the description!" },
-                ]}
-              >
-                <Input.TextArea />
-              </Form.Item>
-              <Form.Item>
-                <Button type="primary" htmlType="submit">
-                  Save
-                </Button>
-              </Form.Item>
-            </Form>
-          </Modal>
-          <Modal
-            title={viewingTemplate?.name}
-            visible={isViewModalVisible}
-            onCancel={handleViewCancel}
-            footer={null}
-          >
-            <p>{viewingTemplate?.description}</p>
-          </Modal>
-        </div>
-      </div>
-    </DndProvider>
+    <div style={{ height: 500, position: "relative" }}>
+      <button
+        onClick={addNode}
+        style={{
+          position: "absolute",
+          top: 10,
+          right: 10,
+          zIndex: 10,
+          padding: "8px 12px",
+          backgroundColor: "#1890ff",
+          color: "#fff",
+          border: "none",
+          borderRadius: "4px",
+          cursor: "pointer",
+        }}
+      >
+        Add Node
+      </button>
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onNodeDragStop={onNodeDragStop}
+        onConnect={onConnect}
+        style={{ width: "100%", height: "100%" }}
+      >
+        <MiniMap />
+        <Controls />
+        <Background />
+      </ReactFlow>
+    </div>
   );
 };
 
