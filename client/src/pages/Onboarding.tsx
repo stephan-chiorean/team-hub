@@ -9,15 +9,16 @@ import {
   Col,
   Dropdown,
   Menu,
-  Select,
   Tooltip,
 } from "antd";
-import { EllipsisOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  EllipsisOutlined,
+  PlusOutlined,
+  DownOutlined,
+} from "@ant-design/icons";
 import { useDrag, useDrop, DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import update from "immutability-helper";
-
-const { Option } = Select;
 
 const ItemType = "CARD";
 
@@ -84,7 +85,7 @@ const Onboarding = () => {
   const [templates, setTemplates] = useState<any[]>([]);
   const [editingTemplate, setEditingTemplate] = useState<any | null>(null);
   const [viewingTemplate, setViewingTemplate] = useState<any | null>(null);
-  const [selectedTeam, setSelectedTeam] = useState<string>("Team 1");
+  const [selectedTeam, setSelectedTeam] = useState<string>("Authorizers");
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -147,6 +148,21 @@ const Onboarding = () => {
     </Menu>
   );
 
+  const teamMenu = (
+    <Menu
+      onClick={(e) => {
+        setSelectedTeam(e.key);
+      }}
+    >
+      <Menu.Item key="Authorizers">Authorizers</Menu.Item>
+      <Menu.Item key="Dynamics">Dynamics</Menu.Item>
+      <Menu.SubMenu key="Commanders" title="Commanders">
+        <Menu.Item key="Commanders - Stream">Stream</Menu.Item>
+        <Menu.Item key="Commanders - Core">Core</Menu.Item>
+      </Menu.SubMenu>
+    </Menu>
+  );
+
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="zoom-container">
@@ -158,15 +174,14 @@ const Onboarding = () => {
               marginBottom: "16px",
             }}
           >
-            <Select
-              defaultValue={selectedTeam}
-              style={{ width: 200 }}
-              onChange={(value) => setSelectedTeam(value)}
-            >
-              <Option value="Team 1">Team 1</Option>
-              <Option value="Team 2">Team 2</Option>
-              <Option value="Team 3">Team 3</Option>
-            </Select>
+            <div>
+              Team:{" "}
+              <Dropdown overlay={teamMenu}>
+                <Button>
+                  {selectedTeam} <DownOutlined />
+                </Button>
+              </Dropdown>
+            </div>
             <Button type="primary" onClick={showModal}>
               Create New Template
             </Button>
