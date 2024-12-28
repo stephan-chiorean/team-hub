@@ -75,18 +75,18 @@ const cardData = [
     route: "/documentation",
   },
   {
-    title: "Projects",
-    description: "Manage and track the progress of team projects.",
+    title: "Interviews",
+    description: "Manage your interview process efficiently.",
     hasNotification: false,
     links: [
-      "Project Dashboard",
-      "Task Management",
-      "Milestones",
-      "Resource Allocation",
-      "Project Reports",
-      "Project Archives",
+      "Templates",
+      "Interview Scheduling",
+      "My Interviews",
+      "Feedback",
+      "Interview Analytics",
+      "Interview Training",
     ],
-    route: "/projects",
+    route: "/interviews",
   },
 ];
 

@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from "react";
 import ReactFlow, {
-  ReactFlowProvider,
   addEdge,
   MiniMap,
   Controls,
@@ -14,6 +13,7 @@ import ReactFlow, {
   applyNodeChanges,
   applyEdgeChanges,
 } from "react-flow-renderer";
+import { Modal, Form, Input, Checkbox, Button, Table } from "antd";
 
 const initialNodes: Node[] = [
   {
@@ -47,9 +47,19 @@ const initialEdges: Edge[] = [
   { id: "e3-4", source: "3", target: "4", animated: true },
 ];
 
+interface Task {
+  key: string;
+  description: string;
+  done: boolean;
+}
+
 const Onboarding = () => {
-  const [nodes, setNodes] = useState<Node[]>(initialNodes);
-  const [edges, setEdges] = useState<Edge[]>(initialEdges);
+  const [nodes, setNodes] = useState<Node[]>([]);
+  const [edges, setEdges] = useState<Edge[]>([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [currentNode, setCurrentNode] = useState<Node | null>(null);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [form] = Form.useForm();
   const reactFlowInstance = useReactFlow();
 
   const onConnect = useCallback(
@@ -59,17 +69,13 @@ const Onboarding = () => {
 
   const onNodesChange = useCallback(
     (changes: NodeChange[]) =>
-      setNodes(
-        (nds) => applyNodeChanges(changes, nds) // Use `applyNodeChanges` from the library
-      ),
+      setNodes((nds) => applyNodeChanges(changes, nds)),
     []
   );
 
   const onEdgesChange = useCallback(
     (changes: EdgeChange[]) =>
-      setEdges(
-        (eds) => applyEdgeChanges(changes, eds) // Use `applyEdgeChanges` from the library
-      ),
+      setEdges((eds) => applyEdgeChanges(changes, eds)),
     []
   );
 
@@ -84,18 +90,97 @@ const Onboarding = () => {
     []
   );
 
-  const addNode = () => {
-    const newNode: Node = {
-      id: (nodes.length + 1).toString(),
-      data: { label: `Node ${nodes.length + 1}` },
-      position: { x: Math.random() * 400, y: Math.random() * 400 },
-    };
-    setNodes((nds) => nds.concat(newNode));
+  const onNodeClick = (event: React.MouseEvent, node: Node) => {
+    setCurrentNode(node);
+    form.setFieldsValue({ label: node.data.label });
+    setTasks(node.data.tasks || []);
+    setIsModalVisible(true);
   };
 
-  const fitView = useCallback(() => {
-    reactFlowInstance.fitView();
-  }, [reactFlowInstance]);
+  const addNode = () => {
+    setCurrentNode(null);
+    form.resetFields();
+    setTasks([]);
+    setIsModalVisible(true);
+  };
+
+  const handleOk = () => {
+    form.validateFields().then((values) => {
+      const newTasks = tasks.map((task) => ({
+        ...task,
+        done: values.tasks?.includes(task.key) || false,
+      }));
+
+      if (currentNode) {
+        setNodes((nds) =>
+          nds.map((n) =>
+            n.id === currentNode.id
+              ? {
+                  ...n,
+                  data: { ...n.data, label: values.label, tasks: newTasks },
+                }
+              : n
+          )
+        );
+      } else {
+        const newNode: Node = {
+          id: (nodes.length + 1).toString(),
+          data: { label: values.label, tasks: newTasks },
+          position: { x: Math.random() * 400, y: Math.random() * 400 },
+        };
+        setNodes((nds) => nds.concat(newNode));
+      }
+      setIsModalVisible(false);
+    });
+  };
+
+  const handleAddTask = () => {
+    const newTask: Task = {
+      key: (tasks.length + 1).toString(),
+      description: "",
+      done: false,
+    };
+    setTasks([...tasks, newTask]);
+  };
+
+  const handleTaskChange = (key: string, value: string) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((task) =>
+        task.key === key ? { ...task, description: value } : task
+      )
+    );
+  };
+
+  const handleCheckboxChange = (key: string, checked: boolean) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((task) =>
+        task.key === key ? { ...task, done: checked } : task
+      )
+    );
+  };
+
+  const columns = [
+    {
+      title: "Done",
+      dataIndex: "done",
+      render: (done: boolean, record: Task) => (
+        <Checkbox
+          checked={done}
+          onChange={(e) => handleCheckboxChange(record.key, e.target.checked)}
+        />
+      ),
+    },
+    {
+      title: "Description",
+      dataIndex: "description",
+      render: (text: string, record: Task) => (
+        <Input
+          value={text}
+          onChange={(e) => handleTaskChange(record.key, e.target.value)}
+        />
+      ),
+    },
+  ];
 
   return (
     <div style={{ height: 500, position: "relative" }}>
@@ -123,12 +208,47 @@ const Onboarding = () => {
         onEdgesChange={onEdgesChange}
         onNodeDragStop={onNodeDragStop}
         onConnect={onConnect}
+        onNodeClick={onNodeClick}
         style={{ width: "100%", height: "100%" }}
       >
         <MiniMap />
         <Controls />
         <Background />
       </ReactFlow>
+      <Modal
+        title={currentNode ? "Edit Node" : "Add Node"}
+        visible={isModalVisible}
+        onOk={handleOk}
+        onCancel={() => setIsModalVisible(false)}
+        width={600}
+      >
+        <Form form={form} layout="vertical">
+          <Form.Item
+            name="label"
+            label="Node Label"
+            rules={[
+              { required: true, message: "Please input the node label!" },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item name="tasks" label="Tasks">
+            <Button
+              onClick={handleAddTask}
+              type="dashed"
+              style={{ marginBottom: 16 }}
+            >
+              Add Task
+            </Button>
+            <Table
+              dataSource={tasks}
+              columns={columns}
+              pagination={false}
+              rowKey="key"
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };

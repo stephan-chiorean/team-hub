@@ -14,6 +14,8 @@ import Referrals from "./pages/Referrals";
 import Sourcing from "./pages/Sourcing";
 import AddReferral from "./pages/AddReferral";
 import Documentation from "./pages/Documentation";
+import Interviews from "./pages/Interviews";
+import InterviewTemplate from "./pages/InterviewTemplate";
 
 const { Content, Footer } = Layout;
 
@@ -33,11 +35,16 @@ function App() {
           >
             <Routes>
               <Route path="/dashboard" Component={Dashboard} />
+              <Route path="/interviews" Component={Interviews} />
               <Route path="/documentation" Component={Documentation} />
               <Route path="/team-management" Component={TeamManagement} />
               <Route path="/projects" Component={Projects} />
               <Route path="/recruitment" Component={Recruitment} />
               <Route path="/onboarding" Component={Onboarding} />
+              <Route
+                path="/interviews/:templateId"
+                Component={InterviewTemplate}
+              />
               <Route path="/reports-analytics" Component={ReportsAnalytics} />
               <Route path="/settings" Component={Settings} />
               <Route path="/referrals" Component={Referrals} />
