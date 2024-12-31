@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import { Table, Typography, Checkbox, Tabs } from "antd";
+import { Table, Typography, Checkbox, Tabs, Button } from "antd";
 import "./Interviews/InterviewTemplate.css";
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 const { TabPane } = Tabs;
 
 interface InterviewQuestion {
@@ -41,7 +41,106 @@ const interviewStages: Record<string, Record<string, InterviewQuestion[]>> = {
           ],
         },
       },
-      // 4 more questions as previously provided.
+      {
+        key: "2",
+        title: "Cloud Backend",
+        question: "What are the key benefits of cloud computing?",
+        levels: {
+          Junior: [
+            "Understands basic cloud concepts (e.g., IaaS, PaaS, SaaS).",
+            "Can explain cost-effectiveness of the cloud.",
+            "Knows common cloud providers (AWS, Azure, GCP).",
+            "Understands basic scalability features.",
+          ],
+          Senior: [
+            "Can compare on-premises vs. cloud environments.",
+            "Knows about autoscaling and load balancing.",
+            "Understands security aspects of the cloud.",
+            "Can evaluate cloud service trade-offs.",
+          ],
+          Staff: [
+            "Understands advanced scalability options like distributed databases.",
+            "Knows how to architect a multi-region cloud setup.",
+            "Understands cost optimization techniques.",
+            "Can design high-availability systems in the cloud.",
+          ],
+        },
+      },
+      {
+        key: "3",
+        title: "Cloud Backend",
+        question: "Explain the concept of containerization.",
+        levels: {
+          Junior: [
+            "Knows what containers are (e.g., Docker).",
+            "Understands the benefits of containers over VMs.",
+            "Knows basic container commands (build, run, stop).",
+            "Can explain a container use case.",
+          ],
+          Senior: [
+            "Understands container orchestration (e.g., Kubernetes).",
+            "Knows how to write Dockerfiles.",
+            "Understands container networking.",
+            "Knows how to manage container lifecycle.",
+          ],
+          Staff: [
+            "Can design a container-based microservices architecture.",
+            "Knows advanced Kubernetes concepts (e.g., Helm charts, operators).",
+            "Understands multi-cloud container deployments.",
+            "Knows security considerations for containers.",
+          ],
+        },
+      },
+      {
+        key: "4",
+        title: "Cloud Backend",
+        question: "How do you ensure API security?",
+        levels: {
+          Junior: [
+            "Knows the importance of HTTPS.",
+            "Understands basic authentication (e.g., API keys).",
+            "Can explain why CORS is important.",
+            "Understands input validation.",
+          ],
+          Senior: [
+            "Knows about OAuth 2.0 and JWTs.",
+            "Understands rate limiting and throttling.",
+            "Knows how to handle sensitive data (e.g., encryption).",
+            "Can design APIs with secure authentication mechanisms.",
+          ],
+          Staff: [
+            "Understands advanced authentication methods (e.g., SAML, OpenID).",
+            "Can design an API with multiple access levels.",
+            "Knows how to integrate monitoring for suspicious activity.",
+            "Understands compliance requirements (e.g., GDPR, HIPAA).",
+          ],
+        },
+      },
+      {
+        key: "5",
+        title: "Cloud Backend",
+        question: "What are the challenges in scaling cloud services?",
+        levels: {
+          Junior: [
+            "Understands the need for scaling.",
+            "Knows the difference between vertical and horizontal scaling.",
+            "Understands the role of load balancers.",
+            "Knows how databases can become a bottleneck.",
+          ],
+          Senior: [
+            "Knows about caching strategies (e.g., Redis, Memcached).",
+            "Understands distributed systems principles.",
+            "Knows how to design stateless services.",
+            "Understands auto-scaling policies.",
+          ],
+          Staff: [
+            "Can design a scalable and resilient cloud architecture.",
+            "Knows about eventual consistency in distributed systems.",
+            "Understands trade-offs in scaling databases (e.g., sharding).",
+            "Knows how to optimize cloud costs while scaling.",
+          ],
+        },
+      },
     ],
     "Preliminary Interview": [
       {
@@ -317,8 +416,23 @@ const InterviewTemplate: React.FC = () => {
       dataIndex: "question",
       key: "question",
       render: (text: string) => (
-        <div style={{ display: "flex", flexDirection: "column" }}>{text}</div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            fontWeight: "bold",
+            color: "#333",
+          }}
+        >
+          {text}
+        </div>
       ),
+      onCell: () => ({
+        style: {
+          backgroundColor: "#f0f0f0",
+          borderBottom: "1px solid #e8e8e8",
+        },
+      }),
     },
     ...["Junior", "Senior", "Staff"].map((level) => ({
       title: level,
@@ -349,6 +463,17 @@ const InterviewTemplate: React.FC = () => {
         {Object.keys(interviewStages[templateId || "cloud-backend"] || {}).map(
           (stage) => (
             <TabPane tab={stage} key={stage}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "16px",
+                }}
+              >
+                <Text type="secondary">Time: 30 minutes</Text>
+                <Button type="primary">Add Question</Button>
+              </div>
               <Table
                 bordered
                 dataSource={dataSource}
