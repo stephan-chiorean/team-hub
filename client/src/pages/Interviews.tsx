@@ -324,25 +324,10 @@ const Interviews: React.FC = () => {
 
   return (
     <div style={{ padding: "24px" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <h2>My Interviews</h2>
-        <Link href="#" style={{ fontSize: "16px" }}>
-          See More
-        </Link>
-      </div>
-      <Table
-        dataSource={myInterviewsData}
-        columns={interviewColumns}
-        pagination={false}
-      />
-      <div style={{ marginTop: "24px" }}>
-        <h2>Interview Templates</h2>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <div style={{ fontSize: "20px", fontWeight: 500 }}>
+          Interview Templates
+        </div>
         <Button
           type="primary"
           onClick={showModal}
@@ -350,19 +335,19 @@ const Interviews: React.FC = () => {
         >
           Add Template
         </Button>
-        <Row gutter={[16, 16]}>
-          {interviewTemplates.map((template) => (
-            <Col span={8} key={template.id}>
-              <Card
-                onClick={() => handleCardClick(template.id)}
-                style={{ textAlign: "center", cursor: "pointer" }}
-              >
-                {template.title}
-              </Card>
-            </Col>
-          ))}
-        </Row>
       </div>
+      <Row gutter={[16, 16]}>
+        {interviewTemplates.map((template) => (
+          <Col span={8} key={template.id}>
+            <Card
+              onClick={() => handleCardClick(template.id)}
+              style={{ textAlign: "center", cursor: "pointer" }}
+            >
+              {template.title}
+            </Card>
+          </Col>
+        ))}
+      </Row>
       <Modal
         title="Add New Template"
         visible={isModalVisible}
@@ -400,6 +385,25 @@ const Interviews: React.FC = () => {
           </div>
         </Form>
       </Modal>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginTop: "50px",
+          marginBottom: "16px",
+        }}
+      >
+        <div style={{ fontSize: "20px", fontWeight: 500 }}>My Interviews</div>
+        <Link href="#" style={{ fontSize: "16px" }}>
+          See More
+        </Link>
+      </div>
+      <Table
+        dataSource={myInterviewsData}
+        columns={interviewColumns}
+        pagination={false}
+      />
     </div>
   );
 };

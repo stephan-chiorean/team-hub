@@ -1,7 +1,17 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import { Table, Typography, Checkbox, Tabs, Button } from "antd";
-import "./Interviews/InterviewTemplate.css";
+import {
+  Table,
+  Typography,
+  Checkbox,
+  Tabs,
+  Button,
+  Modal,
+  Form,
+  Input,
+  Space,
+} from "antd";
+import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
 
 const { Title, Text } = Typography;
 const { TabPane } = Tabs;
@@ -406,9 +416,36 @@ const interviewStages: Record<string, Record<string, InterviewQuestion[]>> = {
 const InterviewTemplate: React.FC = () => {
   const { templateId } = useParams<{ templateId: string }>();
   const [activeTab, setActiveTab] = useState("Recruiter Screen");
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [form] = Form.useForm();
 
   const dataSource =
     interviewStages[templateId || "cloud-backend"]?.[activeTab] || [];
+
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    form.resetFields();
+  };
+
+  const handleFinish = (values: any) => {
+    const newQuestion: InterviewQuestion = {
+      key: (dataSource.length + 1).toString(),
+      title: "Cloud Backend",
+      question: values.question,
+      levels: {
+        Junior: values.junior,
+        Senior: values.senior,
+        Staff: values.staff,
+      },
+    };
+    interviewStages[templateId || "cloud-backend"][activeTab].push(newQuestion);
+    setIsModalVisible(false);
+    form.resetFields();
+  };
 
   const columns = [
     {
@@ -472,7 +509,9 @@ const InterviewTemplate: React.FC = () => {
                 }}
               >
                 <Text type="secondary">Time: 30 minutes</Text>
-                <Button type="primary">Add Question</Button>
+                <Button type="primary" onClick={showModal}>
+                  Add Question
+                </Button>
               </div>
               <Table
                 bordered
@@ -485,6 +524,94 @@ const InterviewTemplate: React.FC = () => {
           )
         )}
       </Tabs>
+      <Modal
+        title="Add New Question"
+        visible={isModalVisible}
+        onCancel={handleCancel}
+        footer={null}
+      >
+        <Form form={form} layout="vertical" onFinish={handleFinish}>
+          <Form.Item
+            name="question"
+            label="Question"
+            rules={[{ required: true, message: "Please input the question!" }]}
+          >
+            <Input />
+          </Form.Item>
+          {["junior", "senior", "staff"].map((level) => (
+            <Form.Item
+              key={level}
+              label={level.charAt(0).toUpperCase() + level.slice(1)}
+              style={{ marginBottom: "16px" }}
+              rules={[
+                {
+                  validator: (_, value) =>
+                    value && value.length > 0
+                      ? Promise.resolve()
+                      : Promise.reject(
+                          new Error(
+                            `Please add at least one criteria for ${level}.`
+                          )
+                        ),
+                },
+              ]}
+            >
+              <Form.List name={level}>
+                {(fields, { add, remove }) => (
+                  <>
+                    {fields.map(({ key, name, fieldKey, ...restField }) => (
+                      <div
+                        key={key}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          marginBottom: "8px",
+                          gap: "8px",
+                        }}
+                      >
+                        <Form.Item
+                          {...restField}
+                          name={[name]}
+                          fieldKey={[fieldKey as number]}
+                          rules={[
+                            { required: true, message: "Missing criteria" },
+                          ]}
+                          style={{ flex: 1, marginBottom: 0 }}
+                        >
+                          <Input placeholder="Criteria" />
+                        </Form.Item>
+                        <MinusCircleOutlined
+                          onClick={() => remove(name)}
+                          style={{
+                            fontSize: "16px",
+                            color: "red",
+                            cursor: "pointer",
+                          }}
+                        />
+                      </div>
+                    ))}
+                    <Form.Item style={{ marginBottom: "8px" }}>
+                      <Button
+                        type="dashed"
+                        onClick={() => add()}
+                        block
+                        icon={<PlusOutlined />}
+                      >
+                        Add Criteria
+                      </Button>
+                    </Form.Item>
+                  </>
+                )}
+              </Form.List>
+            </Form.Item>
+          ))}
+          <Form.Item>
+            <Button type="primary" htmlType="submit" style={{ marginTop: 16 }}>
+              Submit
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };
