@@ -32,7 +32,7 @@ interface InterviewTemplate {
   id: string;
 }
 
-interface Layer {
+interface Stage {
   key: string;
   name: string;
 }
@@ -114,7 +114,7 @@ const Interviews: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [form] = Form.useForm();
-  const [layers, setLayers] = useState<Layer[]>([]);
+  const [stages, setstages] = useState<Stage[]>([]);
   const [levels, setLevels] = useState<Level[]>([]);
 
   const showModal = () => {
@@ -125,7 +125,7 @@ const Interviews: React.FC = () => {
     setIsModalVisible(false);
     setCurrentStep(0);
     form.resetFields();
-    setLayers([]);
+    setstages([]);
     setLevels([]);
   };
 
@@ -143,28 +143,28 @@ const Interviews: React.FC = () => {
     setIsModalVisible(false);
     setCurrentStep(0);
     form.resetFields();
-    setLayers([]);
+    setstages([]);
     setLevels([]);
   };
 
-  const addLayer = () => {
-    const newLayer: Layer = {
-      key: (layers.length + 1).toString(),
+  const addstage = () => {
+    const newstage: Stage = {
+      key: (stages.length + 1).toString(),
       name: "",
     };
-    setLayers([...layers, newLayer]);
+    setstages([...stages, newstage]);
   };
 
-  const updateLayerName = (key: string, name: string) => {
-    setLayers((prevLayers) =>
-      prevLayers.map((layer) =>
-        layer.key === key ? { ...layer, name } : layer
+  const updatestageName = (key: string, name: string) => {
+    setstages((prevstages) =>
+      prevstages.map((stage) =>
+        stage.key === key ? { ...stage, name } : stage
       )
     );
   };
 
-  const deleteLayer = (key: string) => {
-    setLayers((prevLayers) => prevLayers.filter((layer) => layer.key !== key));
+  const deletestage = (key: string) => {
+    setstages((prevstages) => prevstages.filter((stage) => stage.key !== key));
   };
 
   const addLevel = () => {
@@ -187,27 +187,27 @@ const Interviews: React.FC = () => {
     setLevels((prevLevels) => prevLevels.filter((level) => level.key !== key));
   };
 
-  const layersColumns = [
+  const stagesColumns = [
     {
-      title: "Layer Name",
+      title: "Stage Name",
       dataIndex: "name",
       key: "name",
-      render: (text: string, record: Layer) => (
+      render: (text: string, record: Stage) => (
         <Input
           value={text}
-          onChange={(e) => updateLayerName(record.key, e.target.value)}
-          placeholder="Enter layer name"
+          onChange={(e) => updatestageName(record.key, e.target.value)}
+          placeholder="Enter stage name"
         />
       ),
     },
     {
       title: "Actions",
       key: "actions",
-      render: (_: any, record: Layer) => (
+      render: (_: any, record: Stage) => (
         <Button
           icon={<DeleteOutlined />}
           danger
-          onClick={() => deleteLayer(record.key)}
+          onClick={() => deletestage(record.key)}
         />
       ),
     },
@@ -259,15 +259,15 @@ const Interviews: React.FC = () => {
       ),
     },
     {
-      title: "Layers",
+      title: "Stages",
       content: (
         <>
-          <Button type="dashed" onClick={addLayer} style={{ marginBottom: 16 }}>
-            Add Layer
+          <Button type="dashed" onClick={addstage} style={{ marginBottom: 16 }}>
+            Add stage
           </Button>
           <Table
-            dataSource={layers}
-            columns={layersColumns}
+            dataSource={stages}
+            columns={stagesColumns}
             pagination={false}
             rowKey="key"
           />
