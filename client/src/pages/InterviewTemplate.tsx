@@ -9,7 +9,8 @@ import {
   Modal,
   Form,
   Input,
-  Space,
+  Tooltip,
+  InputNumber,
 } from "antd";
 import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
 
@@ -20,9 +21,9 @@ interface InterviewQuestion {
   key: string;
   title: string;
   question: string;
+  time?: number; // Optional time field for duration
   levels: Record<string, string[]>;
 }
-
 const interviewStages: Record<string, Record<string, InterviewQuestion[]>> = {
   "cloud-backend": {
     "Recruiter Screen": [
@@ -418,6 +419,7 @@ const InterviewTemplate: React.FC = () => {
   const [activeTab, setActiveTab] = useState("Recruiter Screen");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
+  const [isFormValid, setIsFormValid] = useState(false);
 
   const dataSource =
     interviewStages[templateId || "cloud-backend"]?.[activeTab] || [];
@@ -436,6 +438,7 @@ const InterviewTemplate: React.FC = () => {
       key: (dataSource.length + 1).toString(),
       title: "Cloud Backend",
       question: values.question,
+      time: values.time,
       levels: {
         Junior: values.junior,
         Senior: values.senior,
@@ -445,6 +448,15 @@ const InterviewTemplate: React.FC = () => {
     interviewStages[templateId || "cloud-backend"][activeTab].push(newQuestion);
     setIsModalVisible(false);
     form.resetFields();
+  };
+
+  const handleFormChange = async () => {
+    try {
+      await form.validateFields();
+      setIsFormValid(true);
+    } catch {
+      setIsFormValid(false);
+    }
   };
 
   const columns = [
@@ -459,6 +471,7 @@ const InterviewTemplate: React.FC = () => {
             flexDirection: "column",
             fontWeight: "bold",
             color: "#333",
+            alignItems: "flex-start",
           }}
         >
           {text}
@@ -476,7 +489,15 @@ const InterviewTemplate: React.FC = () => {
       dataIndex: ["levels", level],
       key: level,
       render: (items: string[]) => (
-        <div style={{ display: "flex", flexDirection: "column" }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "flex-start",
+            alignItems: "flex-start",
+            alignContent: "flex-start",
+          }}
+        >
           {items.map((item, index) => (
             <div key={index} style={{ display: "flex", alignItems: "start" }}>
               <Checkbox checked={false} disabled />
@@ -530,19 +551,36 @@ const InterviewTemplate: React.FC = () => {
         onCancel={handleCancel}
         footer={null}
       >
-        <Form form={form} layout="vertical" onFinish={handleFinish}>
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleFinish}
+          onValuesChange={handleFormChange}
+        >
           <Form.Item
             name="question"
             label="Question"
-            rules={[{ required: true, message: "Please input the question!" }]}
+            rules={[{ required: true, message: "Please input the question." }]}
           >
             <Input />
+          </Form.Item>
+          <Form.Item
+            name="time"
+            label="Time"
+            tooltip="Specify the expected duration for this question."
+          >
+            <InputNumber
+              placeholder="Optional (Minutes)"
+              min={0}
+              max={60}
+              step={1}
+              style={{ width: "100%" }}
+            />
           </Form.Item>
           {["junior", "senior", "staff"].map((level) => (
             <Form.Item
               key={level}
               label={level.charAt(0).toUpperCase() + level.slice(1)}
-              style={{ marginBottom: "16px" }}
               rules={[
                 {
                   validator: (_, value) =>
@@ -606,9 +644,22 @@ const InterviewTemplate: React.FC = () => {
             </Form.Item>
           ))}
           <Form.Item>
-            <Button type="primary" htmlType="submit" style={{ marginTop: 16 }}>
-              Submit
-            </Button>
+            <Tooltip
+              title={
+                isFormValid
+                  ? ""
+                  : "Please ensure each level has at least one criteria."
+              }
+            >
+              <Button
+                type="primary"
+                htmlType="submit"
+                disabled={!isFormValid}
+                style={{ marginTop: 16 }}
+              >
+                Submit
+              </Button>
+            </Tooltip>
           </Form.Item>
         </Form>
       </Modal>
