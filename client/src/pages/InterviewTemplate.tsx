@@ -13,6 +13,7 @@ import {
   InputNumber,
 } from "antd";
 import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
+import { div } from "framer-motion/client";
 
 const { Title, Text } = Typography;
 const { TabPane } = Tabs;
@@ -465,22 +466,30 @@ const InterviewTemplate: React.FC = () => {
       dataIndex: "question",
       key: "question",
       render: (text: string) => (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            fontWeight: "bold",
-            color: "#333",
-            alignItems: "flex-start",
-          }}
-        >
-          {text}
+        <div>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              fontWeight: "bold",
+              color: "#333",
+              alignItems: "flex-start",
+            }}
+          >
+            {text}
+          </div>
+          <div>
+            <Text type="secondary">
+              Time: {Math.floor(Math.random() * 10) + 1} minutes
+            </Text>
+          </div>
         </div>
       ),
       onCell: () => ({
         style: {
           backgroundColor: "#f0f0f0",
           borderBottom: "1px solid #e8e8e8",
+          verticalAlign: "top",
         },
       }),
     },
@@ -506,6 +515,11 @@ const InterviewTemplate: React.FC = () => {
           ))}
         </div>
       ),
+      onCell: () => ({
+        style: {
+          verticalAlign: "top",
+        },
+      }),
     })),
   ];
 
