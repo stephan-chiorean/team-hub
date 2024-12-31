@@ -114,8 +114,8 @@ const Interviews: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [form] = Form.useForm();
-  const [stages, setstages] = useState<Stage[]>([]);
-  const [levels, setLevels] = useState<Level[]>([]);
+  const [stages, setStages] = useState<Stage[]>([]);
+  const [levels, setLevels] = useState<Record<string, Level[]>>({});
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -125,8 +125,8 @@ const Interviews: React.FC = () => {
     setIsModalVisible(false);
     setCurrentStep(0);
     form.resetFields();
-    setstages([]);
-    setLevels([]);
+    setStages([]);
+    setLevels({});
   };
 
   const handleNext = () => {
@@ -143,48 +143,67 @@ const Interviews: React.FC = () => {
     setIsModalVisible(false);
     setCurrentStep(0);
     form.resetFields();
-    setstages([]);
-    setLevels([]);
+    setStages([]);
+    setLevels({});
   };
 
-  const addstage = () => {
-    const newstage: Stage = {
+  const addStage = () => {
+    const newStage: Stage = {
       key: (stages.length + 1).toString(),
       name: "",
     };
-    setstages([...stages, newstage]);
+    setStages([...stages, newStage]);
+    setLevels((prevLevels) => ({ ...prevLevels, [newStage.key]: [] }));
   };
 
-  const updatestageName = (key: string, name: string) => {
-    setstages((prevstages) =>
-      prevstages.map((stage) =>
+  const updateStageName = (key: string, name: string) => {
+    setStages((prevStages) =>
+      prevStages.map((stage) =>
         stage.key === key ? { ...stage, name } : stage
       )
     );
   };
 
-  const deletestage = (key: string) => {
-    setstages((prevstages) => prevstages.filter((stage) => stage.key !== key));
+  const deleteStage = (key: string) => {
+    setStages((prevStages) => prevStages.filter((stage) => stage.key !== key));
+    setLevels((prevLevels) => {
+      const newLevels = { ...prevLevels };
+      delete newLevels[key];
+      return newLevels;
+    });
   };
 
-  const addLevel = () => {
+  const addLevel = (stageKey: string) => {
     const newLevel: Level = {
-      key: (levels.length + 1).toString(),
+      key: (levels[stageKey]?.length + 1).toString(),
       name: "",
     };
-    setLevels([...levels, newLevel]);
+    setLevels((prevLevels) => ({
+      ...prevLevels,
+      [stageKey]: [...(prevLevels[stageKey] || []), newLevel],
+    }));
   };
 
-  const updateLevelName = (key: string, name: string) => {
-    setLevels((prevLevels) =>
-      prevLevels.map((level) =>
-        level.key === key ? { ...level, name } : level
-      )
-    );
+  const updateLevelName = (
+    stageKey: string,
+    levelKey: string,
+    name: string
+  ) => {
+    setLevels((prevLevels) => ({
+      ...prevLevels,
+      [stageKey]: prevLevels[stageKey].map((level) =>
+        level.key === levelKey ? { ...level, name } : level
+      ),
+    }));
   };
 
-  const deleteLevel = (key: string) => {
-    setLevels((prevLevels) => prevLevels.filter((level) => level.key !== key));
+  const deleteLevel = (stageKey: string, levelKey: string) => {
+    setLevels((prevLevels) => ({
+      ...prevLevels,
+      [stageKey]: prevLevels[stageKey].filter(
+        (level) => level.key !== levelKey
+      ),
+    }));
   };
 
   const stagesColumns = [
@@ -195,7 +214,7 @@ const Interviews: React.FC = () => {
       render: (text: string, record: Stage) => (
         <Input
           value={text}
-          onChange={(e) => updatestageName(record.key, e.target.value)}
+          onChange={(e) => updateStageName(record.key, e.target.value)}
           placeholder="Enter stage name"
         />
       ),
@@ -207,13 +226,13 @@ const Interviews: React.FC = () => {
         <Button
           icon={<DeleteOutlined />}
           danger
-          onClick={() => deletestage(record.key)}
+          onClick={() => deleteStage(record.key)}
         />
       ),
     },
   ];
 
-  const levelsColumns = [
+  const levelsColumns = (stageKey: string) => [
     {
       title: "Level Name",
       dataIndex: "name",
@@ -221,7 +240,9 @@ const Interviews: React.FC = () => {
       render: (text: string, record: Level) => (
         <Input
           value={text}
-          onChange={(e) => updateLevelName(record.key, e.target.value)}
+          onChange={(e) =>
+            updateLevelName(stageKey, record.key, e.target.value)
+          }
           placeholder="Enter level name"
         />
       ),
@@ -233,7 +254,7 @@ const Interviews: React.FC = () => {
         <Button
           icon={<DeleteOutlined />}
           danger
-          onClick={() => deleteLevel(record.key)}
+          onClick={() => deleteLevel(stageKey, record.key)}
         />
       ),
     },
@@ -262,8 +283,8 @@ const Interviews: React.FC = () => {
       title: "Stages",
       content: (
         <>
-          <Button type="dashed" onClick={addstage} style={{ marginBottom: 16 }}>
-            Add stage
+          <Button type="dashed" onClick={addStage} style={{ marginBottom: 16 }}>
+            Add Stage
           </Button>
           <Table
             dataSource={stages}
@@ -278,15 +299,24 @@ const Interviews: React.FC = () => {
       title: "Levels",
       content: (
         <>
-          <Button type="dashed" onClick={addLevel} style={{ marginBottom: 16 }}>
-            Add Level
-          </Button>
-          <Table
-            dataSource={levels}
-            columns={levelsColumns}
-            pagination={false}
-            rowKey="key"
-          />
+          {stages.map((stage) => (
+            <div key={stage.key} style={{ marginBottom: 24 }}>
+              <h3>{stage.name}</h3>
+              <Button
+                type="dashed"
+                onClick={() => addLevel(stage.key)}
+                style={{ marginBottom: 16 }}
+              >
+                Add Level
+              </Button>
+              <Table
+                dataSource={levels[stage.key]}
+                columns={levelsColumns(stage.key)}
+                pagination={false}
+                rowKey="key"
+              />
+            </div>
+          ))}
         </>
       ),
     },
