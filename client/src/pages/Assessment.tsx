@@ -11,7 +11,7 @@ const Assessment: React.FC = () => {
   const { candidateId } = useParams<{ candidateId: string }>();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [notes, setNotes] = useState<string>(""); // Single notes variable for the entire session
-  const [started, setStarted] = useState(false);
+  const [started, setStarted] = useState(true); // Start immediately
   const [selectedCell, setSelectedCell] = useState<string | null>(null);
   const [selectedCheckboxes, setSelectedCheckboxes] = useState<{
     [key: string]: boolean;
@@ -35,11 +35,6 @@ const Assessment: React.FC = () => {
   const handlePrev = () => {
     setCurrentQuestionIndex((prevIndex) => prevIndex - 1);
     setSelectedCell(null);
-  };
-
-  const handleStart = () => {
-    setStarted(true);
-    setTimerKey((prevKey) => prevKey + 1);
   };
 
   const handleNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -239,72 +234,60 @@ const Assessment: React.FC = () => {
 
   return (
     <div style={{ padding: "24px", textAlign: "center" }}>
-      {!started ? (
-        <Button type="primary" onClick={handleStart}>
-          Begin Interview
-        </Button>
-      ) : (
-        <div>
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <Title level={4}>Question: {currentQuestion.question}</Title>
-            <Countdown
-              key={timerKey}
-              date={Date.now() + (currentQuestion.time || 0) * 60000}
-              renderer={renderer}
-            />
-          </div>
-          <Table
-            dataSource={dataSource}
-            columns={columns}
-            pagination={false}
-            bordered
-          />
-          <TextArea
-            rows={8}
-            value={notes}
-            onChange={handleNotesChange}
-            onKeyDown={handleKeyDown}
-            placeholder="Enter your notes here"
-            style={{ marginTop: "16px", whiteSpace: "pre-wrap" }}
-          />
-          <div style={{ marginTop: "16px" }}>
-            {currentQuestionIndex > 0 && (
-              <Button style={{ marginRight: "8px" }} onClick={handlePrev}>
-                Previous
-              </Button>
-            )}
-            <Tooltip
-              title={
-                selectedCell
-                  ? ""
-                  : "Please select a level before continuing assessment"
-              }
-              overlayInnerStyle={{
-                textAlign: "center",
-                maxWidth: "300px",
-                whiteSpace: "normal",
-              }}
-            >
-              <Button
-                type="primary"
-                onClick={handleNext}
-                disabled={!selectedCell}
-              >
-                Next
-              </Button>
-            </Tooltip>
-            {currentQuestionIndex === interviewData.length - 1 && (
-              <Button
-                type="primary"
-                onClick={() => alert("Interview Completed!")}
-                style={{ marginLeft: "8px" }}
-              >
-                Finish
-              </Button>
-            )}
-          </div>
-        </div>
-      )}
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <Title level={4}>Question: {currentQuestion.question}</Title>
+        <Countdown
+          key={timerKey}
+          date={Date.now() + (currentQuestion.time || 0) * 60000}
+          renderer={renderer}
+        />
+      </div>
+      <Table
+        dataSource={dataSource}
+        columns={columns}
+        pagination={false}
+        bordered
+      />
+      <TextArea
+        rows={8}
+        value={notes}
+        onChange={handleNotesChange}
+        onKeyDown={handleKeyDown}
+        placeholder="Enter your notes here"
+        style={{ marginTop: "16px", whiteSpace: "pre-wrap" }}
+      />
+      <div style={{ marginTop: "16px" }}>
+        {currentQuestionIndex > 0 && (
+          <Button style={{ marginRight: "8px" }} onClick={handlePrev}>
+            Previous
+          </Button>
+        )}
+        <Tooltip
+          title={
+            selectedCell
+              ? ""
+              : "Please select a level before continuing assessment"
+          }
+          overlayInnerStyle={{
+            textAlign: "center",
+            maxWidth: "300px",
+            whiteSpace: "normal",
+          }}
+        >
+          <Button type="primary" onClick={handleNext} disabled={!selectedCell}>
+            Next
+          </Button>
+        </Tooltip>
+        {currentQuestionIndex === interviewData.length - 1 && (
+          <Button
+            type="primary"
+            onClick={() => alert("Interview Completed!")}
+            style={{ marginLeft: "8px" }}
+          >
+            Finish
+          </Button>
+        )}
+      </div>
     </div>
   );
 };

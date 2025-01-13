@@ -17,6 +17,7 @@ import Documentation from "./pages/Documentation";
 import Interviews from "./pages/Interviews";
 import InterviewTemplate from "./pages/InterviewTemplate";
 import Assessment from "./pages/Assessment";
+import CandidateProfile from "./pages/CandidateProfile";
 
 const { Content, Footer } = Layout;
 
@@ -46,9 +47,10 @@ function App() {
                 path="/interviews/:templateId"
                 Component={InterviewTemplate}
               />
+              <Route path="/assessments/:candidateId" Component={Assessment} />
               <Route
-                path="/interviews/assessments/:candidateId"
-                Component={Assessment}
+                path="/candidates/:candidateId"
+                Component={CandidateProfile}
               />
               <Route path="/reports-analytics" Component={ReportsAnalytics} />
               <Route path="/settings" Component={Settings} />

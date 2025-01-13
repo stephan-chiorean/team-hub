@@ -80,7 +80,7 @@ const InterviewTable: React.FC<InterviewTableProps> = ({ data }) => {
       title: "Action",
       key: "action",
       render: (text: any, record: Interview) => (
-        <Link to={`/interviews/assessments/${record.key}`}>
+        <Link to={`/candidates/${record.key}`}>
           <Button type="default">View</Button>
         </Link>
       ),
