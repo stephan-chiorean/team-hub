@@ -18,6 +18,8 @@ import Interviews from "./pages/Interviews";
 import InterviewTemplate from "./pages/InterviewTemplate";
 import Assessment from "./pages/Assessment";
 import CandidateProfile from "./pages/CandidateProfile";
+import Decision from "./pages/Decision";
+import ScoreOverview from "./pages/ScoreOverview";
 
 const { Content, Footer } = Layout;
 
@@ -52,6 +54,11 @@ function App() {
                 path="/candidates/:candidateId"
                 Component={CandidateProfile}
               />
+              <Route
+                path="/score-overview/:candidateId"
+                Component={ScoreOverview}
+              />
+              <Route path="/decision/:candidateId" Component={Decision} />
               <Route path="/reports-analytics" Component={ReportsAnalytics} />
               <Route path="/settings" Component={Settings} />
               <Route path="/referrals" Component={Referrals} />

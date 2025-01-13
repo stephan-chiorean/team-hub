@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Typography, Button, Table, Input, Checkbox, Tooltip } from "antd";
 import Countdown, { zeroPad } from "react-countdown";
 import { interviewStages } from "./InterviewTemplate";
@@ -9,6 +9,7 @@ const { TextArea } = Input;
 
 const Assessment: React.FC = () => {
   const { candidateId } = useParams<{ candidateId: string }>();
+  const navigate = useNavigate();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [notes, setNotes] = useState<string>(""); // Single notes variable for the entire session
   const [started, setStarted] = useState(true); // Start immediately
@@ -232,6 +233,10 @@ const Assessment: React.FC = () => {
     }
   };
 
+  const handleFinish = () => {
+    navigate(`/decision/${candidateId}`);
+  };
+
   return (
     <div style={{ padding: "24px", textAlign: "center" }}>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -262,30 +267,49 @@ const Assessment: React.FC = () => {
             Previous
           </Button>
         )}
-        <Tooltip
-          title={
-            selectedCell
-              ? ""
-              : "Please select a level before continuing assessment"
-          }
-          overlayInnerStyle={{
-            textAlign: "center",
-            maxWidth: "300px",
-            whiteSpace: "normal",
-          }}
-        >
-          <Button type="primary" onClick={handleNext} disabled={!selectedCell}>
-            Next
-          </Button>
-        </Tooltip>
-        {currentQuestionIndex === interviewData.length - 1 && (
-          <Button
-            type="primary"
-            onClick={() => alert("Interview Completed!")}
-            style={{ marginLeft: "8px" }}
+        {currentQuestionIndex < interviewData.length - 1 ? (
+          <Tooltip
+            title={
+              selectedCell
+                ? ""
+                : "Please select a level before continuing assessment"
+            }
+            overlayInnerStyle={{
+              textAlign: "center",
+              maxWidth: "300px",
+              whiteSpace: "normal",
+            }}
           >
-            Finish
-          </Button>
+            <Button
+              type="primary"
+              onClick={handleNext}
+              disabled={!selectedCell}
+            >
+              Next
+            </Button>
+          </Tooltip>
+        ) : (
+          <Tooltip
+            title={
+              selectedCell
+                ? ""
+                : "Please select a level before finishing assessment"
+            }
+            overlayInnerStyle={{
+              textAlign: "center",
+              maxWidth: "300px",
+              whiteSpace: "normal",
+            }}
+          >
+            <Button
+              type="primary"
+              onClick={handleFinish}
+              disabled={!selectedCell}
+              style={{ marginLeft: "8px" }}
+            >
+              Finish
+            </Button>
+          </Tooltip>
         )}
       </div>
     </div>
