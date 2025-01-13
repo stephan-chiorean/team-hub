@@ -25,11 +25,15 @@ interface InterviewQuestion {
   time?: number; // Optional time field for duration
   levels: Record<string, string[]>;
 }
-const interviewStages: Record<string, Record<string, InterviewQuestion[]>> = {
+export const interviewStages: Record<
+  string,
+  Record<string, InterviewQuestion[]>
+> = {
   "cloud-backend": {
     "Recruiter Screen": [
       {
         key: "1",
+        time: 5,
         title: "Cloud Backend",
         question: "What is the purpose of RESTful APIs?",
         levels: {
@@ -55,6 +59,7 @@ const interviewStages: Record<string, Record<string, InterviewQuestion[]>> = {
       },
       {
         key: "2",
+        time: 5,
         title: "Cloud Backend",
         question: "What are the key benefits of cloud computing?",
         levels: {
@@ -80,6 +85,7 @@ const interviewStages: Record<string, Record<string, InterviewQuestion[]>> = {
       },
       {
         key: "3",
+        time: 5,
         title: "Cloud Backend",
         question: "Explain the concept of containerization.",
         levels: {
@@ -105,6 +111,7 @@ const interviewStages: Record<string, Record<string, InterviewQuestion[]>> = {
       },
       {
         key: "4",
+        time: 5,
         title: "Cloud Backend",
         question: "How do you ensure API security?",
         levels: {
@@ -130,6 +137,7 @@ const interviewStages: Record<string, Record<string, InterviewQuestion[]>> = {
       },
       {
         key: "5",
+        time: 5,
         title: "Cloud Backend",
         question: "What are the challenges in scaling cloud services?",
         levels: {

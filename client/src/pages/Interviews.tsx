@@ -15,6 +15,7 @@ import {
 } from "antd";
 import { QuestionCircleOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import InterviewTable from "@/components/Interviews/InterviewTable";
 
 const { Link } = Typography;
 const { Step } = Steps;
@@ -25,6 +26,7 @@ interface Interview {
   position: string;
   date: string;
   status: string;
+  stage: string;
 }
 
 interface InterviewTemplate {
@@ -49,6 +51,7 @@ const myInterviewsData: Interview[] = [
     position: "Cloud Backend",
     date: "2023-10-01",
     status: "Pending",
+    stage: "Recruiter Screen",
   },
   {
     key: "2",
@@ -56,6 +59,7 @@ const myInterviewsData: Interview[] = [
     position: "Cloud SRE",
     date: "2023-10-05",
     status: "Upcoming",
+    stage: "Preliminary Interview",
   },
 ];
 
@@ -394,16 +398,26 @@ const Interviews: React.FC = () => {
           marginBottom: "16px",
         }}
       >
+        <div style={{ fontSize: "20px", fontWeight: 500 }}>
+          Upcoming Interviews
+        </div>
+      </div>
+      <InterviewTable data={myInterviewsData} />
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginTop: "50px",
+          marginBottom: "16px",
+        }}
+      >
         <div style={{ fontSize: "20px", fontWeight: 500 }}>My Interviews</div>
         <Link href="#" style={{ fontSize: "16px" }}>
           See More
         </Link>
       </div>
-      <Table
-        dataSource={myInterviewsData}
-        columns={interviewColumns}
-        pagination={false}
-      />
+      <InterviewTable data={myInterviewsData} />
     </div>
   );
 };

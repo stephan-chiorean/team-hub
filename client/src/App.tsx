@@ -16,6 +16,7 @@ import AddReferral from "./pages/AddReferral";
 import Documentation from "./pages/Documentation";
 import Interviews from "./pages/Interviews";
 import InterviewTemplate from "./pages/InterviewTemplate";
+import Assessment from "./pages/Assessment";
 
 const { Content, Footer } = Layout;
 
@@ -44,6 +45,10 @@ function App() {
               <Route
                 path="/interviews/:templateId"
                 Component={InterviewTemplate}
+              />
+              <Route
+                path="/interviews/assessments/:candidateId"
+                Component={Assessment}
               />
               <Route path="/reports-analytics" Component={ReportsAnalytics} />
               <Route path="/settings" Component={Settings} />
