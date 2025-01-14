@@ -25,7 +25,7 @@ interface Interview {
   candidate: string;
   position: string;
   date: string;
-  status: string;
+  time: string; // Added time field
   stage: string;
 }
 
@@ -44,13 +44,13 @@ interface Level {
   name: string;
 }
 
-const myInterviewsData: Interview[] = [
+const upcomingInterviewsData: Interview[] = [
   {
     key: "1",
     candidate: "John Doe",
     position: "Cloud Backend",
     date: "2023-10-01",
-    status: "Pending",
+    time: "10:00 - 11:00 AM (ET)",
     stage: "Recruiter Screen",
   },
   {
@@ -58,8 +58,51 @@ const myInterviewsData: Interview[] = [
     candidate: "Jane Smith",
     position: "Cloud SRE",
     date: "2023-10-05",
-    status: "Upcoming",
+    time: "1:00 - 2:00 PM (ET)",
     stage: "Preliminary Interview",
+  },
+];
+
+const completedInterviewsData: Interview[] = [
+  {
+    key: "3",
+    candidate: "Alice Johnson",
+    position: "Data Scientist",
+    date: "2023-10-25",
+    time: "9:00 - 10:00 AM (ET)",
+    stage: "Technical Panel",
+  },
+  {
+    key: "4",
+    candidate: "Bob Brown",
+    position: "UX Designer",
+    date: "2023-10-30",
+    time: "11:00 AM - 12:00 PM (ET)",
+    stage: "Recruiter Screen",
+  },
+  {
+    key: "5",
+    candidate: "Charlie Davis",
+    position: "Backend Developer",
+    date: "2023-11-02",
+    time: "2:00 - 3:00 PM (ET)",
+    stage: "Technical Panel",
+  },
+  {
+    key: "6",
+    candidate: "Diana Prince",
+    position: "Frontend Developer",
+    date: "2023-11-03",
+    time: "3:00 - 4:00 PM (ET)",
+    stage: "Preliminary Interview",
+  },
+  {
+    key: "7",
+    candidate: "Eve Adams",
+    position: "DevOps Engineer",
+    date: "2023-11-04",
+    time: "4:00 - 5:00 PM (ET)",
+    stage: "Recruiter Screen",
   },
 ];
 
@@ -106,10 +149,10 @@ const interviewColumns = [
     key: "date",
   },
   {
-    title: "Status",
-    dataIndex: "status",
-    key: "status",
-    render: (status: string) => getStatusTag(status),
+    title: "Stage",
+    dataIndex: "stage",
+    key: "stage",
+    render: (stage: string) => getStatusTag(stage),
   },
 ];
 
@@ -402,7 +445,7 @@ const Interviews: React.FC = () => {
           Upcoming Interviews
         </div>
       </div>
-      <InterviewTable data={myInterviewsData} />
+      <InterviewTable data={upcomingInterviewsData} />
       <div
         style={{
           display: "flex",
@@ -412,12 +455,11 @@ const Interviews: React.FC = () => {
           marginBottom: "16px",
         }}
       >
-        <div style={{ fontSize: "20px", fontWeight: 500 }}>My Interviews</div>
-        <Link href="#" style={{ fontSize: "16px" }}>
-          See More
-        </Link>
+        <div style={{ fontSize: "20px", fontWeight: 500 }}>
+          Completed Interviews
+        </div>
       </div>
-      <InterviewTable data={myInterviewsData} />
+      <InterviewTable data={completedInterviewsData} />
     </div>
   );
 };
