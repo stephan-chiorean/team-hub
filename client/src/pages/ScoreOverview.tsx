@@ -17,7 +17,7 @@ import {
   FaRegThumbsDown,
   FaRegThumbsUp,
 } from "react-icons/fa";
-import { interviewStages } from "./InterviewTemplate";
+import { interviewStages } from "@/data/interviewStages";
 
 const { TabPane } = Tabs;
 const { Title, Text } = Typography;
@@ -54,7 +54,17 @@ const selectedLevels: Record<number, string> = {
 
 const mockData = {
   decision: "Approve",
-  notes: "These are the notes from the assessment.",
+  notes: {
+    strengths: [
+      "Good communication skills",
+      "Strong technical knowledge",
+      "Team player",
+    ],
+    weaknesses: [
+      "Needs improvement in time management",
+      "Lacks experience in project management",
+    ],
+  },
 };
 
 const ScoreOverview: React.FC = () => {
@@ -121,6 +131,10 @@ const ScoreOverview: React.FC = () => {
 
   return (
     <div style={{ padding: "24px" }}>
+      <Title level={2}>John Doe</Title>
+      <Title level={4} type="secondary" style={{ marginTop: 0 }}>
+        Interview Summary
+      </Title>
       <Tabs defaultActiveKey="1">
         <TabPane tab="Assessment" key="1">
           <Row
@@ -174,12 +188,20 @@ const ScoreOverview: React.FC = () => {
             </Col>
           </Row>
           <Title level={4}>Notes</Title>
-          <TextArea
-            rows={8}
-            value={mockData.notes}
-            readOnly
-            style={{ whiteSpace: "pre-wrap", marginBottom: "24px" }}
-          />
+          <div style={{ marginBottom: "24px" }}>
+            <Title level={5}>Strengths</Title>
+            <ul>
+              {mockData.notes.strengths.map((strength, index) => (
+                <li key={index}>- {strength}</li>
+              ))}
+            </ul>
+            <Title level={5}>Weaknesses</Title>
+            <ul>
+              {mockData.notes.weaknesses.map((weakness, index) => (
+                <li key={index}>- {weakness}</li>
+              ))}
+            </ul>
+          </div>
           <Title level={4}>Scoring</Title>
           <Table
             dataSource={questions}

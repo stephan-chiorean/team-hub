@@ -1,8 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Typography, Button, Table, Input, Checkbox, Tooltip } from "antd";
+import {
+  Typography,
+  Button,
+  Table,
+  Input,
+  Checkbox,
+  Tooltip,
+  Row,
+  Col,
+} from "antd";
 import Countdown, { zeroPad } from "react-countdown";
-import { interviewStages } from "./InterviewTemplate";
+import { interviewStages } from "@/data/interviewStages";
 
 const { Title } = Typography;
 const { TextArea } = Input;
@@ -15,7 +24,7 @@ const Assessment: React.FC = () => {
   const [started, setStarted] = useState(true); // Start immediately
   const [selectedCell, setSelectedCell] = useState<string | null>(null);
   const [selectedCheckboxes, setSelectedCheckboxes] = useState<{
-    [key: string]: boolean;
+    [key: number]: { [key: string]: boolean };
   }>({});
   const [timerKey, setTimerKey] = useState(0);
 
@@ -69,9 +78,12 @@ const Assessment: React.FC = () => {
 
   const handleCheckboxClick = (level: string, index: number) => {
     const checkboxKey = `${level}-${index}`;
-    setSelectedCheckboxes((prevSelectedCheckboxes) => ({
-      ...prevSelectedCheckboxes,
-      [checkboxKey]: !prevSelectedCheckboxes[checkboxKey],
+    setSelectedCheckboxes((prevState) => ({
+      ...prevState,
+      [currentQuestionIndex]: {
+        ...prevState[currentQuestionIndex],
+        [checkboxKey]: !prevState[currentQuestionIndex]?.[checkboxKey],
+      },
     }));
   };
 
@@ -101,6 +113,8 @@ const Assessment: React.FC = () => {
         >
           {items.map((item, index) => {
             const checkboxKey = `Junior-${index}`;
+            const isChecked =
+              selectedCheckboxes[currentQuestionIndex]?.[checkboxKey] || false;
             return (
               <div
                 key={index}
@@ -111,7 +125,7 @@ const Assessment: React.FC = () => {
                 }}
               >
                 <Checkbox
-                  checked={selectedCheckboxes[checkboxKey]}
+                  checked={isChecked}
                   onClick={() => handleCheckboxClick("Junior", index)}
                 />
                 <span style={{ marginLeft: "8px" }}>{item}</span>
@@ -146,6 +160,8 @@ const Assessment: React.FC = () => {
         >
           {items.map((item, index) => {
             const checkboxKey = `Senior-${index}`;
+            const isChecked =
+              selectedCheckboxes[currentQuestionIndex]?.[checkboxKey] || false;
             return (
               <div
                 key={index}
@@ -156,7 +172,7 @@ const Assessment: React.FC = () => {
                 }}
               >
                 <Checkbox
-                  checked={selectedCheckboxes[checkboxKey]}
+                  checked={isChecked}
                   onClick={() => handleCheckboxClick("Senior", index)}
                 />
                 <span style={{ marginLeft: "8px" }}>{item}</span>
@@ -189,6 +205,8 @@ const Assessment: React.FC = () => {
         >
           {items.map((item, index) => {
             const checkboxKey = `Staff-${index}`;
+            const isChecked =
+              selectedCheckboxes[currentQuestionIndex]?.[checkboxKey] || false;
             return (
               <div
                 key={index}
@@ -199,7 +217,7 @@ const Assessment: React.FC = () => {
                 }}
               >
                 <Checkbox
-                  checked={selectedCheckboxes[checkboxKey]}
+                  checked={isChecked}
                   onClick={() => handleCheckboxClick("Staff", index)}
                 />
                 <span style={{ marginLeft: "8px" }}>{item}</span>
@@ -226,7 +244,7 @@ const Assessment: React.FC = () => {
     } else {
       const isLessThanOneMinute = minutes === 0;
       return (
-        <span style={{ color: isLessThanOneMinute ? "red" : "black" }}>
+        <span style={{ color: isLessThanOneMinute ? "red" : "gray" }}>
           {zeroPad(minutes)}:{zeroPad(seconds)}
         </span>
       );
@@ -234,19 +252,79 @@ const Assessment: React.FC = () => {
   };
 
   const handleFinish = () => {
+    console.log("Final checkbox states:", selectedCheckboxes);
     navigate(`/decision/${candidateId}`);
   };
 
   return (
-    <div style={{ padding: "24px", textAlign: "center" }}>
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <Title level={4}>Question: {currentQuestion.question}</Title>
-        <Countdown
-          key={timerKey}
-          date={Date.now() + (currentQuestion.time || 0) * 60000}
-          renderer={renderer}
-        />
-      </div>
+    <div style={{ padding: "24px" }}>
+      <Row
+        justify="space-between"
+        align="middle"
+        style={{ marginBottom: "16px" }}
+      >
+        <Col>
+          <Title level={4}>Question: {currentQuestion.question}</Title>
+          <Countdown
+            key={timerKey}
+            date={Date.now() + (currentQuestion.time || 0) * 60000}
+            renderer={renderer}
+          />
+        </Col>
+        <Col>
+          <div style={{ display: "flex", justifyContent: "flex-end" }}>
+            {currentQuestionIndex > 0 && (
+              <Button style={{ marginRight: "8px" }} onClick={handlePrev}>
+                Previous
+              </Button>
+            )}
+            {currentQuestionIndex < interviewData.length - 1 ? (
+              <Tooltip
+                title={
+                  selectedCell
+                    ? ""
+                    : "Please select a level before continuing assessment"
+                }
+                overlayInnerStyle={{
+                  textAlign: "center",
+                  maxWidth: "300px",
+                  whiteSpace: "normal",
+                }}
+              >
+                <Button
+                  type="primary"
+                  onClick={handleNext}
+                  disabled={!selectedCell}
+                >
+                  Next
+                </Button>
+              </Tooltip>
+            ) : (
+              <Tooltip
+                title={
+                  selectedCell
+                    ? ""
+                    : "Please select a level before finishing assessment"
+                }
+                overlayInnerStyle={{
+                  textAlign: "center",
+                  maxWidth: "300px",
+                  whiteSpace: "normal",
+                }}
+              >
+                <Button
+                  type="primary"
+                  onClick={handleFinish}
+                  disabled={!selectedCell}
+                  style={{ marginLeft: "8px" }}
+                >
+                  Finish
+                </Button>
+              </Tooltip>
+            )}
+          </div>
+        </Col>
+      </Row>
       <Table
         dataSource={dataSource}
         columns={columns}
@@ -261,57 +339,6 @@ const Assessment: React.FC = () => {
         placeholder="Enter your notes here"
         style={{ marginTop: "16px", whiteSpace: "pre-wrap" }}
       />
-      <div style={{ marginTop: "16px" }}>
-        {currentQuestionIndex > 0 && (
-          <Button style={{ marginRight: "8px" }} onClick={handlePrev}>
-            Previous
-          </Button>
-        )}
-        {currentQuestionIndex < interviewData.length - 1 ? (
-          <Tooltip
-            title={
-              selectedCell
-                ? ""
-                : "Please select a level before continuing assessment"
-            }
-            overlayInnerStyle={{
-              textAlign: "center",
-              maxWidth: "300px",
-              whiteSpace: "normal",
-            }}
-          >
-            <Button
-              type="primary"
-              onClick={handleNext}
-              disabled={!selectedCell}
-            >
-              Next
-            </Button>
-          </Tooltip>
-        ) : (
-          <Tooltip
-            title={
-              selectedCell
-                ? ""
-                : "Please select a level before finishing assessment"
-            }
-            overlayInnerStyle={{
-              textAlign: "center",
-              maxWidth: "300px",
-              whiteSpace: "normal",
-            }}
-          >
-            <Button
-              type="primary"
-              onClick={handleFinish}
-              disabled={!selectedCell}
-              style={{ marginLeft: "8px" }}
-            >
-              Finish
-            </Button>
-          </Tooltip>
-        )}
-      </div>
     </div>
   );
 };
