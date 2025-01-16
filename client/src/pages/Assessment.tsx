@@ -339,6 +339,32 @@ const Assessment: React.FC = () => {
         placeholder="Enter your notes here"
         style={{ marginTop: "16px", whiteSpace: "pre-wrap" }}
       />
+      <div
+        style={{
+          border: "1px solid #d9d9d9",
+          borderRadius: "8px",
+          padding: "16px",
+          marginTop: "16px",
+          marginBottom: "16px",
+          backgroundColor: "#fafafa",
+        }}
+      >
+        <Title level={5}>Probes:</Title>
+        <ul
+          style={{
+            marginTop: "8px",
+            paddingLeft: "20px",
+            listStyleType: "disc",
+            fontSize: "16px", // Matches the preferred text size
+          }}
+        >
+          {currentQuestion.probes?.map((probe, index) => (
+            <li key={index} style={{ marginBottom: "8px" }}>
+              {probe}
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };

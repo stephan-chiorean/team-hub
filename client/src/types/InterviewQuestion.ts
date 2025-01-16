@@ -3,6 +3,7 @@ export interface InterviewQuestion {
   title: string;
   question: string;
   priority?: Priority;
+  probes?: string[];
   time?: number;
   levels: Record<string, string[]>;
 }

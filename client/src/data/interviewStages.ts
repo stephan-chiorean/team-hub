@@ -10,6 +10,7 @@ export interface InterviewQuestion {
   key: string;
   title: string;
   question: string;
+  probes?: string[]; // Added probes property
   priority?: Priority;
   time?: number; // Optional time field for duration
   levels: Record<string, string[]>;
@@ -26,6 +27,12 @@ export const interviewStages: Record<
         time: 5,
         title: "Cloud Backend",
         question: "What is the purpose of RESTful APIs?",
+        probes: [
+          "How would you secure the endpoints?",
+          "Explain the difference between PUT and PATCH.",
+          "What's the difference between CORS and CSP?",
+          "How would you design a versioning strategy for APIs?",
+        ],
         priority: Priority.Critical,
         levels: {
           Junior: [
@@ -53,6 +60,12 @@ export const interviewStages: Record<
         time: 5,
         title: "Cloud Backend",
         question: "What are the key benefits of cloud computing?",
+        probes: [
+          "How do you decide between IaaS, PaaS, and SaaS?",
+          "What are some trade-offs between cost and scalability?",
+          "Explain how autoscaling works in a cloud environment.",
+          "What are common security considerations in cloud computing?",
+        ],
         priority: Priority.High,
         levels: {
           Junior: [
@@ -80,6 +93,12 @@ export const interviewStages: Record<
         time: 5,
         title: "Cloud Backend",
         question: "Explain the concept of containerization.",
+        probes: [
+          "How do containers differ from virtual machines?",
+          "What are the benefits of using Docker?",
+          "How does Kubernetes enhance container management?",
+          "What are common challenges with container security?",
+        ],
         priority: Priority.Standard,
         levels: {
           Junior: [
@@ -107,6 +126,12 @@ export const interviewStages: Record<
         time: 5,
         title: "Cloud Backend",
         question: "How do you ensure API security?",
+        probes: [
+          "What are the key differences between OAuth 2.0 and JWTs?",
+          "How would you implement rate limiting on an API?",
+          "What is the importance of input validation?",
+          "Explain how to secure sensitive data in APIs.",
+        ],
         priority: Priority.High,
         levels: {
           Junior: [
@@ -134,6 +159,12 @@ export const interviewStages: Record<
         time: 5,
         title: "Cloud Backend",
         question: "What are the challenges in scaling cloud services?",
+        probes: [
+          "How would you handle a database bottleneck during scaling?",
+          "Explain the role of caching in scalable systems.",
+          "What strategies would you use for multi-region deployments?",
+          "How do you manage cost during horizontal scaling?",
+        ],
         priority: Priority.High,
         levels: {
           Junior: [
@@ -162,6 +193,12 @@ export const interviewStages: Record<
         key: "1",
         title: "Cloud Backend",
         question: "What is the role of SLAs, SLOs, and SLIs?",
+        probes: [
+          "How do you measure SLIs in real-time?",
+          "What are the risks of setting aggressive SLOs?",
+          "How would you align SLAs with customer contracts?",
+          "Explain how SLAs impact incident response strategies.",
+        ],
         levels: {
           Junior: [
             "Knows what SLAs, SLOs, and SLIs stand for.",
@@ -188,6 +225,12 @@ export const interviewStages: Record<
         title: "Cloud Backend",
         question:
           "What are the primary challenges in maintaining system reliability?",
+        probes: [
+          "What are common causes of system downtime?",
+          "How would you implement a failover mechanism?",
+          "Explain the importance of backups in reliability.",
+          "What tools would you use for monitoring uptime?",
+        ],
         levels: {
           Junior: [
             "Understands the concept of uptime.",
@@ -214,6 +257,12 @@ export const interviewStages: Record<
         title: "Cloud Backend",
         question:
           "Explain the importance of monitoring and observability in cloud systems.",
+        probes: [
+          "How do you correlate metrics, logs, and traces?",
+          "What tools do you recommend for observability?",
+          "Explain the role of anomaly detection in monitoring.",
+          "How would you design a dashboard for a cloud service?",
+        ],
         levels: {
           Junior: [
             "Knows the basic tools for monitoring (e.g., CloudWatch, Prometheus).",
@@ -239,6 +288,12 @@ export const interviewStages: Record<
         key: "4",
         title: "Cloud Backend",
         question: "Describe the lifecycle of an incident response.",
+        probes: [
+          "What are the key steps in an incident response plan?",
+          "How do you conduct a post-mortem analysis?",
+          "Explain the importance of runbooks during incidents.",
+          "What tools do you use for incident management?",
+        ],
         levels: {
           Junior: [
             "Knows the basic steps in incident response.",
@@ -265,6 +320,12 @@ export const interviewStages: Record<
         title: "Cloud Backend",
         question:
           "How would you design a load-testing strategy for a cloud application?",
+        probes: [
+          "What tools would you use for load testing?",
+          "How would you simulate real-world traffic patterns?",
+          "Explain the difference between load and stress testing.",
+          "How do you interpret the results of a load test?",
+        ],
         levels: {
           Junior: [
             "Understands what load testing is.",

@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import { Table, Typography, Checkbox } from "antd";
+import { Table, Typography, Checkbox, Button } from "antd";
 import {
   ExclamationCircleFilled,
   MinusCircleFilled,
   UpCircleFilled,
   DownCircleFilled,
   EditFilled,
+  DownOutlined,
+  UpOutlined,
 } from "@ant-design/icons";
 import { InterviewQuestion, Priority } from "@/types/InterviewQuestion";
 import EditQuestionModal from "./EditQuestionModal";
@@ -23,6 +25,7 @@ const TemplateTable: React.FC<TemplateTableProps> = ({
 }) => {
   const [selectedQuestion, setSelectedQuestion] =
     useState<InterviewQuestion | null>(null);
+  const [expandedKeys, setExpandedKeys] = useState<string[]>([]);
   const [isModalVisible, setModalVisible] = useState(false);
 
   const priorityIcons: Record<Priority, React.ReactNode> = {
@@ -55,7 +58,16 @@ const TemplateTable: React.FC<TemplateTableProps> = ({
 
   const handleModalSave = (updatedQuestion: InterviewQuestion) => {
     onUpdate(updatedQuestion);
-    handleModalClose();
+    setModalVisible(false);
+    setSelectedQuestion(null);
+  };
+
+  const toggleProbes = (key: string) => {
+    setExpandedKeys((prevKeys) =>
+      prevKeys.includes(key)
+        ? prevKeys.filter((k) => k !== key)
+        : [...prevKeys, key]
+    );
   };
 
   const columns = [
@@ -66,20 +78,54 @@ const TemplateTable: React.FC<TemplateTableProps> = ({
       render: (text: string, record: InterviewQuestion) => (
         <div style={{ display: "flex", flexDirection: "column" }}>
           <strong style={{ fontSize: "16px" }}>{text}</strong>
-          <div style={{ display: "flex", alignItems: "center", marginTop: 4 }}>
+          <div
+            style={{ display: "flex", flexDirection: "column", marginTop: 8 }}
+          >
+            {/* Priority Icons */}
             {record.priority && priorityIcons[record.priority] && (
-              <>
-                <div style={{ marginRight: 8 }}>
-                  <Text type="secondary">Priority: </Text>
-                </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginBottom: 4,
+                }}
+              >
                 {priorityIcons[record.priority]}
-                <Text type="secondary">{record.priority}</Text>
-              </>
+                <Text type="secondary">Priority: {record.priority}</Text>
+              </div>
+            )}
+            {/* Time */}
+            {record.time && (
+              <Text type="secondary">Time: {record.time || 0} minutes</Text>
+            )}
+            {/* Probes Button */}
+            {record.probes && record.probes.length > 0 && (
+              <div style={{ marginTop: "12px" }}>
+                <Button
+                  type="default"
+                  size="small"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleProbes(record.key);
+                  }}
+                  style={{
+                    paddingLeft: 8,
+                    display: "inline-flex",
+                    alignItems: "center",
+                    color: "rgba(0, 0, 0, 0.45)", // Matches text color
+                    textAlign: "left", // Aligns the text to the left
+                  }}
+                >
+                  Probes
+                  {expandedKeys.includes(record.key) ? (
+                    <UpOutlined style={{ marginLeft: 2 }} />
+                  ) : (
+                    <DownOutlined style={{ marginLeft: 2 }} />
+                  )}
+                </Button>
+              </div>
             )}
           </div>
-          {record.time && (
-            <Text type="secondary">Time: {record.time || 0} minutes</Text>
-          )}
         </div>
       ),
       onCell: () => ({
@@ -121,6 +167,35 @@ const TemplateTable: React.FC<TemplateTableProps> = ({
         columns={columns}
         rowKey="key"
         pagination={false}
+        expandable={{
+          expandedRowKeys: expandedKeys,
+          expandIconColumnIndex: -1, // Hides the expand/collapse column
+          expandedRowRender: (record) => (
+            <div
+              style={{
+                padding: "16px",
+                backgroundColor: "#fafafa",
+              }}
+            >
+              <Text strong>Probes:</Text>
+              <ul
+                style={{
+                  marginTop: "8px",
+                  paddingLeft: "20px",
+                  listStyleType: "disc",
+                }}
+              >
+                {record.probes?.map((probe, index) => (
+                  <li key={index} style={{ marginBottom: "4px" }}>
+                    {probe}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ),
+          rowExpandable: (record) =>
+            !!record.probes && record.probes.length > 0, // Only expandable if probes exist
+        }}
         onRow={(record) => ({
           onClick: () => handleRowClick(record),
           style: { cursor: "pointer" },
