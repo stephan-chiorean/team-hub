@@ -1,6 +1,15 @@
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
-import { Tabs, Select, Typography, Table, Row, Col, Checkbox } from "antd";
+import { useParams, useNavigate } from "react-router-dom";
+import {
+  Tabs,
+  Select,
+  Typography,
+  Table,
+  Row,
+  Col,
+  Checkbox,
+  Button,
+} from "antd";
 import {
   FaThumbsDown,
   FaThumbsUp,
@@ -8,6 +17,7 @@ import {
   FaRegThumbsDown,
   FaRegThumbsUp,
 } from "react-icons/fa";
+import { CloseOutlined } from "@ant-design/icons";
 import { interviewStages } from "@/data/interviewStages";
 
 const { TabPane } = Tabs;
@@ -33,17 +43,8 @@ const decisionOptions: Record<string, DecisionOption> = {
   "Strong Approve": { icon: <FaThumbsUp />, color: "#006400" },
 };
 
-// Mock selected levels and criteria from the Assessment flow
-const selectedLevels: Record<number, string> = {
-  0: "Junior", // Question 1: Junior level selected
-  1: "Senior", // Question 2: Senior level selected
-  2: "Staff", // Question 3: Staff level selected
-  3: "Junior", // Question 4: Junior level selected
-  4: "Senior", // Question 5: Senior level selected
-};
-
 const mockData = {
-  decision: "Approve",
+  decision: "Strong Approve",
   notes: {
     strengths: [
       "Good communication skills",
@@ -59,10 +60,22 @@ const mockData = {
 
 const ScoreOverview: React.FC = () => {
   const { candidateId } = useParams<{ candidateId: string }>();
+  const navigate = useNavigate();
+  const [selectedLevels, setSelectedLevels] = useState<Record<number, string>>({
+    0: "Junior",
+    1: "Senior",
+    2: "Staff",
+    3: "Junior",
+    4: "Senior",
+  });
   const [selectedMember, setSelectedMember] = useState<string>("Alice Johnson");
 
   const handleMemberChange = (value: string) => {
     setSelectedMember(value);
+  };
+
+  const handleLevelSelect = (questionIndex: number, level: string) => {
+    setSelectedLevels((prev) => ({ ...prev, [questionIndex]: level }));
   };
 
   const interviewData = interviewStages["cloud-backend"]["Recruiter Screen"];
@@ -97,6 +110,7 @@ const ScoreOverview: React.FC = () => {
             borderRadius: "8px",
             padding: "8px",
           }}
+          onClick={() => handleLevelSelect(record.key, level)}
         >
           {levels[level].map((criterion: string, index: number) => (
             <div
@@ -119,8 +133,26 @@ const ScoreOverview: React.FC = () => {
     })),
   ];
 
+  const handleExit = () => {
+    navigate("/interviews");
+  };
+
   return (
-    <div style={{ padding: "24px" }}>
+    <div style={{ padding: "24px", position: "relative" }}>
+      <Button
+        type="default"
+        onClick={handleExit}
+        style={{
+          position: "absolute",
+          top: "16px",
+          right: "16px",
+          display: "flex",
+          alignItems: "center",
+        }}
+        icon={<CloseOutlined />}
+      >
+        Exit Interview
+      </Button>
       <Title level={2}>John Doe</Title>
       <Title level={4} type="secondary" style={{ marginTop: 0 }}>
         Interview Summary

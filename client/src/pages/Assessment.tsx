@@ -12,6 +12,7 @@ import {
 } from "antd";
 import Countdown, { zeroPad } from "react-countdown";
 import { interviewStages } from "@/data/interviewStages";
+import { CloseOutlined } from "@ant-design/icons";
 
 const { Title } = Typography;
 const { TextArea } = Input;
@@ -85,6 +86,10 @@ const Assessment: React.FC = () => {
         [checkboxKey]: !prevState[currentQuestionIndex]?.[checkboxKey],
       },
     }));
+  };
+
+  const handleExit = () => {
+    navigate("/candidates/1");
   };
 
   const columns = [
@@ -365,6 +370,17 @@ const Assessment: React.FC = () => {
           ))}
         </ul>
       </div>
+      <Button
+        type="default"
+        onClick={handleExit}
+        style={{
+          position: "absolute",
+          bottom: "16px",
+          right: "16px",
+        }}
+      >
+        Exit Interview <CloseOutlined />
+      </Button>
     </div>
   );
 };
