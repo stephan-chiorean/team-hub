@@ -28,7 +28,7 @@ function App() {
     <Router>
       <Layout style={{ minHeight: "100vh" }}>
         <Sidebar />
-        <Layout>
+        <Layout style={{ marginLeft: 250 }}>
           <Header />
           <Content
             style={{

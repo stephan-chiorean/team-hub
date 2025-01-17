@@ -1,15 +1,6 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import {
-  Tabs,
-  Select,
-  Typography,
-  Table,
-  Input,
-  Row,
-  Col,
-  Checkbox,
-} from "antd";
+import { Tabs, Select, Typography, Table, Row, Col, Checkbox } from "antd";
 import {
   FaThumbsDown,
   FaThumbsUp,
@@ -21,7 +12,6 @@ import { interviewStages } from "@/data/interviewStages";
 
 const { TabPane } = Tabs;
 const { Title, Text } = Typography;
-const { TextArea } = Input;
 
 const teamMembers = [
   "Alice Johnson",
@@ -140,32 +130,54 @@ const ScoreOverview: React.FC = () => {
           <Row
             justify="space-between"
             align="middle"
-            style={{ marginBottom: "24px" }}
+            style={{ marginBottom: "16px" }}
           >
             <Col>
-              <Title
-                level={4}
-                style={{ display: "inline-flex", alignItems: "center" }}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginBottom: "16px",
+                }}
               >
-                Decision:
-                <span
+                <Title
+                  level={4}
                   style={{
-                    marginLeft: "8px",
-                    fontSize: "20px",
-                    color: decisionOptions[mockData.decision].color,
+                    margin: 0,
+                    marginRight: "8px",
                   }}
                 >
-                  {decisionOptions[mockData.decision].icon}
-                </span>
-                <span
+                  Decision
+                </Title>
+                <div
                   style={{
-                    marginLeft: "8px",
-                    color: decisionOptions[mockData.decision].color,
+                    border: "1px solid #d9d9d9",
+                    borderRadius: "8px",
+                    padding: "8px",
+                    backgroundColor: "#fafafa",
+                    display: "flex",
+                    alignItems: "center",
                   }}
                 >
-                  {mockData.decision}
-                </span>
-              </Title>
+                  <span
+                    style={{
+                      fontSize: "20px",
+                      color: decisionOptions[mockData.decision].color,
+                      marginRight: "8px",
+                    }}
+                  >
+                    {decisionOptions[mockData.decision].icon}
+                  </span>
+                  <span
+                    style={{
+                      color: decisionOptions[mockData.decision].color,
+                      fontSize: "16px",
+                    }}
+                  >
+                    {mockData.decision}
+                  </span>
+                </div>
+              </div>
             </Col>
             <Col>
               <Title
@@ -188,20 +200,55 @@ const ScoreOverview: React.FC = () => {
             </Col>
           </Row>
           <Title level={4}>Notes</Title>
-          <div style={{ marginBottom: "24px" }}>
-            <Title level={5}>Strengths</Title>
-            <ul>
-              {mockData.notes.strengths.map((strength, index) => (
-                <li key={index}>- {strength}</li>
-              ))}
-            </ul>
-            <Title level={5}>Weaknesses</Title>
-            <ul>
-              {mockData.notes.weaknesses.map((weakness, index) => (
-                <li key={index}>- {weakness}</li>
-              ))}
-            </ul>
+          <div
+            style={{
+              border: "1px solid #d9d9d9",
+              borderRadius: "8px",
+              padding: "12px",
+              marginBottom: "24px",
+              backgroundColor: "#fafafa",
+            }}
+          >
+            <div>
+              <Title level={5}>Strengths</Title>
+              <ul
+                style={{
+                  marginTop: "8px",
+                  paddingLeft: "20px",
+                  listStyleType: "disc",
+                }}
+              >
+                {mockData.notes.strengths.map((strength, index) => (
+                  <li
+                    key={index}
+                    style={{ marginBottom: "8px", fontSize: "16px" }}
+                  >
+                    {strength}
+                  </li>
+                ))}
+              </ul>
+              <Title level={5} style={{ marginTop: "16px" }}>
+                Weaknesses
+              </Title>
+              <ul
+                style={{
+                  marginTop: "8px",
+                  paddingLeft: "20px",
+                  listStyleType: "disc",
+                }}
+              >
+                {mockData.notes.weaknesses.map((weakness, index) => (
+                  <li
+                    key={index}
+                    style={{ marginBottom: "8px", fontSize: "16px" }}
+                  >
+                    {weakness}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
+
           <Title level={4}>Scoring</Title>
           <Table
             dataSource={questions}

@@ -8,94 +8,104 @@ import {
   FileTextOutlined,
   BarChartOutlined,
   SettingOutlined,
+  FileSearchOutlined,
 } from "@ant-design/icons";
-import { Link } from "react-router-dom";
-import teamHubLogo from "../../assets/teamHubLogo.svg";
+import { Link, useLocation } from "react-router-dom";
+import logoCrop from "../../assets/logoCrop.png";
 
 const { Sider } = Layout;
 
 const Sidebar = () => {
+  const location = useLocation();
+  const path = location.pathname.split("/")[1];
+  const selectedKey = [
+    "interviews",
+    "assessments",
+    "candidates",
+    "score-overview",
+    "decision",
+  ].includes(path)
+    ? "interviews"
+    : path || "dashboard";
+
   return (
     <Sider
       width={250}
       style={{
-        minHeight: "100vh",
+        position: "fixed",
+        left: 0,
+        top: 0,
+        bottom: 0,
         backgroundColor: "#001529",
         display: "flex",
         flexDirection: "column",
+        zIndex: 1000,
       }}
     >
+      <div
+        style={{
+          height: "64px",
+          padding: "8px",
+          paddingLeft: "24px",
+          textAlign: "center",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "start",
+        }}
+      >
+        <img
+          src={logoCrop}
+          alt="Team Hub Logo"
+          style={{ maxHeight: "100%", maxWidth: "100%" }}
+        />
+      </div>
       <Menu
         theme="dark"
         mode="inline"
-        defaultSelectedKeys={["1"]}
-        style={{ flex: 1 }}
+        selectedKeys={[selectedKey]}
+        style={{
+          flex: 1,
+          borderRight: "3px solid blue",
+          boxSizing: "border-box",
+        }}
       >
-        <Menu.Item key="1" icon={<DashboardOutlined />}>
+        <Menu.Item key="dashboard" icon={<DashboardOutlined />}>
           <Link to="/dashboard">Dashboard</Link>
         </Menu.Item>
         <Menu.SubMenu
-          key="sub1"
+          key="team-management"
           icon={<TeamOutlined />}
           title="Team Management"
         >
-          <Menu.Item key="2">
+          <Menu.Item key="team-management">
             <Link to="/team-management">View/manage team members</Link>
           </Menu.Item>
-          <Menu.Item key="3">
-            <Link to="/team-management/roles">Role assignments</Link>
+          <Menu.Item key="roles">
+            <Link to="/roles">Roles</Link>
           </Menu.Item>
         </Menu.SubMenu>
-        <Menu.SubMenu key="sub2" icon={<ProjectOutlined />} title="Projects">
-          <Menu.Item key="4">
-            <Link to="/projects">Access ongoing and completed projects</Link>
-          </Menu.Item>
-          <Menu.Item key="5">
-            <Link to="/projects/tasks">Assign tasks</Link>
-          </Menu.Item>
-        </Menu.SubMenu>
-        <Menu.SubMenu key="sub3" icon={<UserAddOutlined />} title="Recruitment">
-          <Menu.Item key="6">
-            <Link to="/recruitment">Sourcing personas</Link>
-          </Menu.Item>
-          <Menu.Item key="7">
-            <Link to="/recruitment/job-requisitions">Job requisitions</Link>
-          </Menu.Item>
-          <Menu.Item key="8">
-            <Link to="/recruitment/interviews">Candidate interviews</Link>
-          </Menu.Item>
-        </Menu.SubMenu>
-        <Menu.Item key="9" icon={<FileTextOutlined />}>
-          <Link to="/onboarding">Onboarding</Link>
+        <Menu.Item key="projects" icon={<ProjectOutlined />}>
+          <Link to="/projects">Projects</Link>
         </Menu.Item>
-        <Menu.SubMenu
-          key="sub4"
-          icon={<BarChartOutlined />}
-          title="Reports/Analytics"
-        >
-          <Menu.Item key="10">
-            <Link to="/reports-analytics">Team performance metrics</Link>
-          </Menu.Item>
-          <Menu.Item key="11">
-            <Link to="/reports-analytics/progress">Project progress</Link>
-          </Menu.Item>
-        </Menu.SubMenu>
-        <Menu.SubMenu key="sub5" icon={<SettingOutlined />} title="Settings">
-          <Menu.Item key="12">
-            <Link to="/settings">General settings for the user or team</Link>
-          </Menu.Item>
-          <Menu.Item key="13">
-            <Link to="/settings/themes">Themes, preferences, etc.</Link>
-          </Menu.Item>
-        </Menu.SubMenu>
+        <Menu.Item key="candidates" icon={<UserAddOutlined />}>
+          <Link to="/candidates">Candidates</Link>
+        </Menu.Item>
+        <Menu.Item key="assessments" icon={<FileTextOutlined />}>
+          <Link to="/assessments">Assessments</Link>
+        </Menu.Item>
+        <Menu.Item key="score-overview" icon={<BarChartOutlined />}>
+          <Link to="/score-overview">Score Overview</Link>
+        </Menu.Item>
+        <Menu.Item key="decision" icon={<FileSearchOutlined />}>
+          <Link to="/decision">Decision</Link>
+        </Menu.Item>
+        <Menu.Item key="interviews" icon={<FileSearchOutlined />}>
+          <Link to="/interviews">Interviews</Link>
+        </Menu.Item>
+        <Menu.Item key="settings" icon={<SettingOutlined />}>
+          <Link to="/settings">Settings</Link>
+        </Menu.Item>
       </Menu>
-      <div style={{ padding: "20px", textAlign: "center", marginTop: "auto" }}>
-        <img
-          src={teamHubLogo}
-          alt="Team Hub Logo"
-          style={{ maxWidth: "100%", marginBottom: "20px" }}
-        />
-      </div>
     </Sider>
   );
 };
