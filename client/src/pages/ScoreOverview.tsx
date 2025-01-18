@@ -19,6 +19,7 @@ import {
 } from "react-icons/fa";
 import { CloseOutlined } from "@ant-design/icons";
 import { interviewStages } from "@/data/interviewStages";
+import { AnalysisTab } from "@/components/Overview/Analysis";
 
 const { TabPane } = Tabs;
 const { Title, Text } = Typography;
@@ -290,9 +291,11 @@ const ScoreOverview: React.FC = () => {
             style={{ marginBottom: "24px" }}
           />
         </TabPane>
-        <TabPane tab="Overview" key="2">
-          <Title level={4}>Overview Content</Title>
-          <Text>Overview content goes here.</Text>
+        <TabPane tab="Analysis" key="2">
+          <AnalysisTab />
+        </TabPane>
+        <TabPane tab="Overview" key="3">
+          <AnalysisTab />
         </TabPane>
       </Tabs>
     </div>
