@@ -1,76 +1,85 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  Typography,
-  Button,
-  Table,
-  Input,
-  Checkbox,
-  Tooltip,
-  Row,
-  Col,
-} from "antd";
+import { Button } from "antd";
 import Countdown, { zeroPad } from "react-countdown";
 import { interviewStages } from "@/data/interviewStages";
 import { CloseOutlined } from "@ant-design/icons";
+import QuestionNavigation from "@/components/Assessment/QuestionNavigation";
+import AssessmentTable from "@/components/Assessment/AssessmentTable";
+import NotesSection from "@/components/Assessment/NotesSection";
+import ProbesSection from "@/components/Assessment/ProbesSection";
 
-const { Title } = Typography;
-const { TextArea } = Input;
+// Define the shape of a question
+interface InterviewQuestion {
+  levels: Record<string, string[]>; // Allow any string keys for levels
+  time?: number; // Optional time in minutes
+  probes?: string[];
+}
 
 const Assessment: React.FC = () => {
   const { candidateId } = useParams<{ candidateId: string }>();
   const navigate = useNavigate();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [notes, setNotes] = useState<string>(""); // Single notes variable for the entire session
-  const [started, setStarted] = useState(true); // Start immediately
+  const [notes, setNotes] = useState<string>("");
   const [selectedCell, setSelectedCell] = useState<string | null>(null);
   const [selectedCheckboxes, setSelectedCheckboxes] = useState<{
     [key: number]: { [key: string]: boolean };
   }>({});
-  const [timerKey, setTimerKey] = useState(0);
 
-  const interviewData = interviewStages["cloud-backend"]["Recruiter Screen"];
-  const currentQuestion = interviewData[currentQuestionIndex];
+  const interviewData: InterviewQuestion[] =
+    interviewStages["cloud-backend"]["Recruiter Screen"];
+
+  // State to store start and end times for questions that have time allocated
+  const [questionTimeMap, setQuestionTimeMap] = useState<{
+    [key: number]: { startTime: number; endTime: number } | undefined;
+  }>({});
 
   useEffect(() => {
-    if (started) {
-      setTimerKey((prevKey) => prevKey + 1);
-    }
-  }, [currentQuestionIndex, started]);
+    // Initialize the time map only if time exists in the questions
+    const initialTimeMap = interviewData.reduce((acc, question, index) => {
+      if (question.time) {
+        const currentTime = Date.now();
+        acc[index] = {
+          startTime: currentTime,
+          endTime: currentTime + question.time * 60000, // Convert minutes to milliseconds
+        };
+      }
+      return acc;
+    }, {} as { [key: number]: { startTime: number; endTime: number } | undefined });
+
+    setQuestionTimeMap(initialTimeMap);
+  }, []);
 
   const handleNext = () => {
-    setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
+    const currentTime = Date.now();
+    const currentEndTime = questionTimeMap[currentQuestionIndex]?.endTime || 0;
+    const remainingTime = currentEndTime ? currentEndTime - currentTime : 0;
+
+    setCurrentQuestionIndex((prevIndex) => {
+      const nextIndex = prevIndex + 1;
+
+      if (interviewData[nextIndex]?.time && remainingTime > 0) {
+        setQuestionTimeMap((prevMap) => ({
+          ...prevMap,
+          [nextIndex]: {
+            startTime: currentTime,
+            endTime:
+              currentTime +
+              interviewData[nextIndex].time! * 60000 +
+              remainingTime,
+          },
+        }));
+      }
+
+      return nextIndex;
+    });
+
     setSelectedCell(null);
   };
 
   const handlePrev = () => {
     setCurrentQuestionIndex((prevIndex) => prevIndex - 1);
     setSelectedCell(null);
-  };
-
-  const handleNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setNotes(e.target.value);
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Tab") {
-      e.preventDefault();
-      const textarea = e.currentTarget;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-
-      // Insert a tab character at the cursor position
-      const newValue =
-        textarea.value.substring(0, start) +
-        "\t" +
-        textarea.value.substring(end);
-      setNotes(newValue);
-
-      // Move the cursor after the inserted tab
-      setTimeout(() => {
-        textarea.selectionStart = textarea.selectionEnd = start + 1;
-      });
-    }
   };
 
   const handleCellClick = (level: string) => {
@@ -92,164 +101,12 @@ const Assessment: React.FC = () => {
     navigate("/candidates/1");
   };
 
-  const columns = [
-    {
-      title: "Junior",
-      dataIndex: "Junior",
-      key: "Junior",
-      render: (items: string[]) => (
-        <div
-          style={{
-            border:
-              selectedCell === "Junior"
-                ? "2px solid blue"
-                : "1px solid #d9d9d9",
-            backgroundColor: selectedCell === "Junior" ? "lightblue" : "white",
-            cursor: "pointer",
-            padding: "8px",
-            height: "100%",
-            borderRadius: "8px",
-          }}
-          onClick={(e) => {
-            if ((e.target as HTMLElement).tagName !== "INPUT") {
-              handleCellClick("Junior");
-            }
-          }}
-        >
-          {items.map((item, index) => {
-            const checkboxKey = `Junior-${index}`;
-            const isChecked =
-              selectedCheckboxes[currentQuestionIndex]?.[checkboxKey] || false;
-            return (
-              <div
-                key={index}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginBottom: "4px",
-                }}
-              >
-                <Checkbox
-                  checked={isChecked}
-                  onClick={() => handleCheckboxClick("Junior", index)}
-                />
-                <span style={{ marginLeft: "8px" }}>{item}</span>
-              </div>
-            );
-          })}
-        </div>
-      ),
-    },
-    {
-      title: "Senior",
-      dataIndex: "Senior",
-      key: "Senior",
-      render: (items: string[]) => (
-        <div
-          style={{
-            border:
-              selectedCell === "Senior"
-                ? "2px solid blue"
-                : "1px solid #d9d9d9",
-            backgroundColor: selectedCell === "Senior" ? "lightblue" : "white",
-            cursor: "pointer",
-            padding: "8px",
-            height: "100%",
-            borderRadius: "8px",
-          }}
-          onClick={(e) => {
-            if ((e.target as HTMLElement).tagName !== "INPUT") {
-              handleCellClick("Senior");
-            }
-          }}
-        >
-          {items.map((item, index) => {
-            const checkboxKey = `Senior-${index}`;
-            const isChecked =
-              selectedCheckboxes[currentQuestionIndex]?.[checkboxKey] || false;
-            return (
-              <div
-                key={index}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginBottom: "4px",
-                }}
-              >
-                <Checkbox
-                  checked={isChecked}
-                  onClick={() => handleCheckboxClick("Senior", index)}
-                />
-                <span style={{ marginLeft: "8px" }}>{item}</span>
-              </div>
-            );
-          })}
-        </div>
-      ),
-    },
-    {
-      title: "Staff",
-      dataIndex: "Staff",
-      key: "Staff",
-      render: (items: string[]) => (
-        <div
-          style={{
-            border:
-              selectedCell === "Staff" ? "2px solid blue" : "1px solid #d9d9d9",
-            backgroundColor: selectedCell === "Staff" ? "lightblue" : "white",
-            cursor: "pointer",
-            padding: "8px",
-            height: "100%",
-            borderRadius: "8px",
-          }}
-          onClick={(e) => {
-            if ((e.target as HTMLElement).tagName !== "INPUT") {
-              handleCellClick("Staff");
-            }
-          }}
-        >
-          {items.map((item, index) => {
-            const checkboxKey = `Staff-${index}`;
-            const isChecked =
-              selectedCheckboxes[currentQuestionIndex]?.[checkboxKey] || false;
-            return (
-              <div
-                key={index}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginBottom: "4px",
-                }}
-              >
-                <Checkbox
-                  checked={isChecked}
-                  onClick={() => handleCheckboxClick("Staff", index)}
-                />
-                <span style={{ marginLeft: "8px" }}>{item}</span>
-              </div>
-            );
-          })}
-        </div>
-      ),
-    },
-  ];
-
-  const dataSource = [
-    {
-      key: "1",
-      Junior: currentQuestion.levels.Junior,
-      Senior: currentQuestion.levels.Senior,
-      Staff: currentQuestion.levels.Staff,
-    },
-  ];
-
   const renderer = ({ minutes, seconds, completed }: any) => {
     if (completed) {
-      return <span>Time's up!</span>;
+      return <span style={{ color: "red" }}>Time's up!</span>;
     } else {
-      const isLessThanOneMinute = minutes === 0;
       return (
-        <span style={{ color: isLessThanOneMinute ? "red" : "gray" }}>
+        <span style={{ color: minutes === 0 ? "red" : "gray" }}>
           {zeroPad(minutes)}:{zeroPad(seconds)}
         </span>
       );
@@ -263,113 +120,67 @@ const Assessment: React.FC = () => {
 
   return (
     <div style={{ padding: "24px" }}>
-      <Row
-        justify="space-between"
-        align="middle"
-        style={{ marginBottom: "16px" }}
-      >
-        <Col>
-          <Title level={4}>Question: {currentQuestion.question}</Title>
-          <Countdown
-            key={timerKey}
-            date={Date.now() + (currentQuestion.time || 0) * 60000}
-            renderer={renderer}
-          />
-        </Col>
-        <Col>
-          <div style={{ display: "flex", justifyContent: "flex-end" }}>
-            {currentQuestionIndex > 0 && (
-              <Button style={{ marginRight: "8px" }} onClick={handlePrev}>
-                Previous
-              </Button>
-            )}
-            {currentQuestionIndex < interviewData.length - 1 ? (
-              <Tooltip
-                title={
-                  selectedCell
-                    ? ""
-                    : "Please select a level before continuing assessment"
-                }
-                overlayInnerStyle={{
-                  textAlign: "center",
-                  maxWidth: "300px",
-                  whiteSpace: "normal",
-                }}
-              >
-                <Button
-                  type="primary"
-                  onClick={handleNext}
-                  disabled={!selectedCell}
-                >
-                  Next
-                </Button>
-              </Tooltip>
-            ) : (
-              <Tooltip
-                title={
-                  selectedCell
-                    ? ""
-                    : "Please select a level before finishing assessment"
-                }
-                overlayInnerStyle={{
-                  textAlign: "center",
-                  maxWidth: "300px",
-                  whiteSpace: "normal",
-                }}
-              >
-                <Button
-                  type="primary"
-                  onClick={handleFinish}
-                  disabled={!selectedCell}
-                  style={{ marginLeft: "8px" }}
-                >
-                  Finish
-                </Button>
-              </Tooltip>
-            )}
-          </div>
-        </Col>
-      </Row>
-      <Table
-        dataSource={dataSource}
-        columns={columns}
-        pagination={false}
-        bordered
+      <QuestionNavigation
+        currentQuestionIndex={currentQuestionIndex}
+        currentQuestion={interviewData[currentQuestionIndex]}
+        interviewDataLength={interviewData.length}
+        selectedCell={selectedCell}
+        handlePrev={handlePrev}
+        handleNext={handleNext}
+        handleFinish={handleFinish}
       />
-      <TextArea
-        rows={8}
-        value={notes}
-        onChange={handleNotesChange}
-        onKeyDown={handleKeyDown}
-        placeholder="Enter your notes here"
-        style={{ marginTop: "16px", whiteSpace: "pre-wrap" }}
-      />
+
       <div
         style={{
-          border: "1px solid #d9d9d9",
-          borderRadius: "8px",
-          padding: "16px",
-          marginTop: "16px",
-          marginBottom: "16px",
-          backgroundColor: "#fafafa",
+          fontSize: "36px",
+          fontWeight: "bold",
+          textAlign: "center",
+          display: "block",
+          margin: "0 auto 16px auto",
         }}
       >
-        <Title level={5}>Probes:</Title>
-        <ul
-          style={{
-            marginTop: "8px",
-            paddingLeft: "20px",
-            listStyleType: "disc",
-            fontSize: "16px", // Matches the preferred text size
-          }}
-        >
-          {currentQuestion.probes?.map((probe, index) => (
-            <li key={index} style={{ marginBottom: "8px" }}>
-              {probe}
-            </li>
-          ))}
-        </ul>
+        {interviewData[currentQuestionIndex]?.time &&
+        questionTimeMap[currentQuestionIndex] ? (
+          <Countdown
+            date={questionTimeMap[currentQuestionIndex]!.endTime}
+            renderer={renderer}
+          />
+        ) : (
+          <span style={{ color: "gray" }}>No time limit</span>
+        )}
       </div>
+
+      <AssessmentTable
+        dataSource={[
+          {
+            key: "1",
+            Junior: interviewData[currentQuestionIndex].levels.Junior,
+            Senior: interviewData[currentQuestionIndex].levels.Senior,
+            Staff: interviewData[currentQuestionIndex].levels.Staff,
+          },
+        ]}
+        columns={[
+          { title: "Junior", dataIndex: "Junior", key: "Junior" },
+          { title: "Senior", dataIndex: "Senior", key: "Senior" },
+          { title: "Staff", dataIndex: "Staff", key: "Staff" },
+        ]}
+        selectedCell={selectedCell}
+        selectedCheckboxes={selectedCheckboxes}
+        currentQuestionIndex={currentQuestionIndex}
+        handleCellClick={handleCellClick}
+        handleCheckboxClick={handleCheckboxClick}
+      />
+
+      <NotesSection
+        notes={notes}
+        handleNotesChange={(e) => setNotes(e.target.value)}
+        handleKeyDown={(e) => e.key === "Tab" && e.preventDefault()}
+      />
+
+      <ProbesSection
+        probes={interviewData[currentQuestionIndex].probes || []}
+      />
+
       <Button
         type="default"
         onClick={handleExit}
