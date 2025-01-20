@@ -109,7 +109,7 @@ const QuestionModal: React.FC<QuestionModalProps> = ({
 
   return (
     <Modal
-      title="Add/Edit Question"
+      title="Add Question"
       visible={visible}
       onCancel={onCancel}
       footer={null}

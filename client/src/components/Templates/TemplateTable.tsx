@@ -9,7 +9,7 @@ import {
   DownOutlined,
   UpOutlined,
 } from "@ant-design/icons";
-import { InterviewQuestion, Priority } from "@/types/InterviewQuestion";
+import { InterviewQuestion, Priority } from "@/types/Question";
 import EditQuestionModal from "./EditQuestionModal";
 
 const { Text } = Typography;

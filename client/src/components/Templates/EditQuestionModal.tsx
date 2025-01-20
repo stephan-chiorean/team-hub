@@ -9,7 +9,7 @@ import {
   DownCircleFilled,
   EditFilled,
 } from "@ant-design/icons";
-import { Priority, InterviewQuestion } from "@/types/InterviewQuestion";
+import { Priority, InterviewQuestion } from "@/types/Question";
 
 const { TextArea } = Input;
 const { Option } = Select;

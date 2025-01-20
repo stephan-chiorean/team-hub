@@ -1,18 +1,21 @@
 import React, { useState } from "react";
 import { Tabs, Button, Typography } from "antd";
+import { SettingOutlined } from "@ant-design/icons";
 import { useParams } from "react-router-dom";
 import { interviewStages } from "@/data/interviewStages";
 import TemplateTable from "@/components/Templates/TemplateTable";
 import QuestionModal from "@/components/Templates/QuestionModal";
-import { InterviewQuestion } from "@/types/InterviewQuestion";
+import { InterviewQuestion } from "@/types/Question";
+import Traits from "@/components/Templates/Attributes"; // Import Traits component
 
 const { TabPane } = Tabs;
-const { Text } = Typography;
+const { Text, Title } = Typography;
 
 const InterviewTemplate: React.FC = () => {
   const { templateId } = useParams<{ templateId: string }>();
-  const [activeTab, setActiveTab] = useState("Recruiter Screen");
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [showAttributes, setShowAttributes] = useState(false); // Toggle between views
+  const [activeTab, setActiveTab] = useState("Recruiter Screen");
 
   const stages = interviewStages[templateId || "cloud-backend"];
   const currentQuestions = stages ? stages[activeTab] : [];
@@ -28,9 +31,9 @@ const InterviewTemplate: React.FC = () => {
         Senior: values.Senior || [],
         Staff: values.Staff || [],
       },
-      priority: values.priority || "Medium", // Default priority
+      priority: values.priority || "Medium",
     };
-    stages[activeTab].push(newQuestion); // Add question to the data
+    stages[activeTab].push(newQuestion);
     setIsModalVisible(false);
   };
 
@@ -45,29 +48,69 @@ const InterviewTemplate: React.FC = () => {
 
   return (
     <div style={{ padding: "24px" }}>
-      <Tabs defaultActiveKey="Recruiter Screen" onChange={setActiveTab}>
+      {/* Title and Buttons above the tabs */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "16px",
+        }}
+      >
+        <Title level={3} style={{ margin: 0 }}>
+          {showAttributes
+            ? "Interview Focus Attributes"
+            : "Interview Questions"}
+        </Title>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <Button
+            type="default"
+            onClick={() => setShowAttributes(!showAttributes)}
+            style={{ marginRight: "8px" }}
+          >
+            {showAttributes ? "Questions" : "Attributes"}
+          </Button>
+          <Button type="default" icon={<SettingOutlined />} />
+        </div>
+      </div>
+
+      {/* Tabs remain in the same position */}
+      <Tabs
+        activeKey={activeTab}
+        onChange={setActiveTab}
+        style={{ marginBottom: "16px" }}
+      >
         {Object.keys(stages || {}).map((stage) => (
-          <TabPane tab={stage} key={stage}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "16px",
-              }}
-            >
-              <Text type="secondary">Time: 30 minutes</Text>
-              <Button type="primary" onClick={() => setIsModalVisible(true)}>
-                Add Question
-              </Button>
-            </div>
-            <TemplateTable
-              dataSource={currentQuestions}
-              onUpdate={handleUpdateQuestion} // Pass onUpdate prop
-            />
-          </TabPane>
+          <TabPane tab={stage} key={stage} />
         ))}
       </Tabs>
+
+      {/* Conditional rendering of content based on state */}
+      {!showAttributes ? (
+        <>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "16px",
+            }}
+          >
+            <Text type="secondary">Time: 30 minutes</Text>
+            <Button type="primary" onClick={() => setIsModalVisible(true)}>
+              Add Question
+            </Button>
+          </div>
+
+          <TemplateTable
+            dataSource={currentQuestions}
+            onUpdate={handleUpdateQuestion}
+          />
+        </>
+      ) : (
+        <Traits />
+      )}
+
       <QuestionModal
         visible={isModalVisible}
         onCancel={() => setIsModalVisible(false)}

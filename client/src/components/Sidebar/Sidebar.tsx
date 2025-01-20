@@ -34,7 +34,7 @@ const Sidebar = () => {
       style={{
         position: "fixed",
         left: 0,
-        top: 0,
+        top: 48, // Starts below the header
         bottom: 0,
         backgroundColor: "#001529",
         display: "flex",
@@ -42,30 +42,12 @@ const Sidebar = () => {
         zIndex: 1000,
       }}
     >
-      <div
-        style={{
-          height: "64px",
-          padding: "8px",
-          paddingLeft: "24px",
-          textAlign: "center",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "start",
-        }}
-      >
-        <img
-          src={logoCrop}
-          alt="Team Hub Logo"
-          style={{ maxHeight: "100%", maxWidth: "100%" }}
-        />
-      </div>
       <Menu
         theme="dark"
         mode="inline"
         selectedKeys={[selectedKey]}
         style={{
           flex: 1,
-          borderRight: "3px solid blue",
           boxSizing: "border-box",
         }}
       >
