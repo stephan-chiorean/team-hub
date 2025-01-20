@@ -20,6 +20,7 @@ import Settings from "@/pages/Settings";
 import Referrals from "@/pages/Referrals";
 import Sourcing from "@/pages/Sourcing";
 import AddReferral from "@/pages/AddReferral";
+import Attributes from "./pages/AttributesAssessment";
 
 const { Content, Footer } = Layout;
 
@@ -70,6 +71,10 @@ function App() {
                 <Route
                   path="/score-overview/:candidateId"
                   Component={ScoreOverview}
+                />
+                <Route
+                  path="/interviews/:candidateId/attributes"
+                  Component={Attributes}
                 />
                 <Route path="/decision/:candidateId" Component={Decision} />
                 <Route path="/reports-analytics" Component={ReportsAnalytics} />

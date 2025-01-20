@@ -115,7 +115,7 @@ const Assessment: React.FC = () => {
 
   const handleFinish = () => {
     console.log("Final checkbox states:", selectedCheckboxes);
-    navigate(`/decision/${candidateId}`);
+    navigate(`/interviews/${candidateId}/attributes`);
   };
 
   return (

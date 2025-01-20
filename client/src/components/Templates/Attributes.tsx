@@ -9,9 +9,17 @@ import {
   Typography,
   List,
   Popconfirm,
+  InputNumber,
 } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
-import { Attribute, AttributeSection, AttributeType } from "@/types/Attribute";
+import {
+  Attribute,
+  AttributeSection,
+  AttributeType,
+  OptionAttribute,
+  SliderAttribute,
+  CheckboxAttribute,
+} from "@/types/Attribute";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -23,6 +31,7 @@ const Attributes: React.FC = () => {
   const [currentSection, setCurrentSection] = useState<AttributeSection | "">(
     ""
   );
+  const [selectedType, setSelectedType] = useState<AttributeType | null>(null);
   const [attributes, setAttributes] = useState<
     Record<AttributeSection, Attribute[]>
   >({
@@ -33,13 +42,47 @@ const Attributes: React.FC = () => {
   });
 
   const handleAddAttribute = (values: any) => {
-    const newAttribute: Attribute = {
-      attribute: values.attribute,
-      type: values.type,
-      required: values.required || false,
-      section: currentSection as AttributeSection,
-      description: values.description || "",
-    };
+    let newAttribute: Attribute;
+
+    switch (values.type) {
+      case AttributeType.Option:
+        newAttribute = {
+          section: currentSection as AttributeSection,
+          attribute: values.attribute,
+          type: AttributeType.Option,
+          required: values.required || false,
+          description: values.description || "",
+          criteria: {
+            options: values.criteria.options || [],
+          },
+        } as OptionAttribute;
+        break;
+      case AttributeType.Slider:
+        newAttribute = {
+          section: currentSection as AttributeSection,
+          attribute: values.attribute,
+          type: AttributeType.Slider,
+          required: values.required || false,
+          description: values.description || "",
+          criteria: {
+            min: values.criteria.min || 0,
+            max: values.criteria.max || 100,
+          },
+        } as SliderAttribute;
+        break;
+      case AttributeType.Checkbox:
+        newAttribute = {
+          section: currentSection as AttributeSection,
+          attribute: values.attribute,
+          type: AttributeType.Checkbox,
+          required: values.required || false,
+          description: values.description || "",
+        } as CheckboxAttribute;
+        break;
+      default:
+        return;
+    }
+
     setAttributes((prevAttributes) => ({
       ...prevAttributes,
       [currentSection as AttributeSection]: [
@@ -47,6 +90,7 @@ const Attributes: React.FC = () => {
         newAttribute,
       ],
     }));
+
     setIsModalVisible(false);
     form.resetFields();
   };
@@ -61,6 +105,11 @@ const Attributes: React.FC = () => {
   const openModal = (section: AttributeSection) => {
     setCurrentSection(section);
     setIsModalVisible(true);
+  };
+
+  const handleTypeChange = (value: AttributeType) => {
+    setSelectedType(value);
+    form.setFieldsValue({ criteria: undefined }); // Reset criteria when type changes
   };
 
   return (
@@ -112,6 +161,14 @@ const Attributes: React.FC = () => {
                         {item.description && (
                           <div>Description: {item.description}</div>
                         )}
+                        {item.type === AttributeType.Option && (
+                          <div>Options: {item.criteria.options.join(", ")}</div>
+                        )}
+                        {item.type === AttributeType.Slider && (
+                          <div>
+                            Scoring: {item.criteria.min} - {item.criteria.max}
+                          </div>
+                        )}
                       </>
                     }
                   />
@@ -147,7 +204,7 @@ const Attributes: React.FC = () => {
             label="Type"
             rules={[{ required: true, message: "Please select the type" }]}
           >
-            <Select placeholder="Select Type">
+            <Select placeholder="Select Type" onChange={handleTypeChange}>
               {Object.values(AttributeType).map((type) => (
                 <Option key={type} value={type}>
                   {type.charAt(0).toUpperCase() + type.slice(1)}
@@ -155,6 +212,49 @@ const Attributes: React.FC = () => {
               ))}
             </Select>
           </Form.Item>
+
+          {selectedType === AttributeType.Option && (
+            <Form.Item
+              name={["criteria", "options"]}
+              label="Options"
+              rules={[
+                {
+                  required: true,
+                  message: "Please provide at least one option",
+                },
+              ]}
+            >
+              <Select
+                mode="tags"
+                placeholder="Enter options"
+                tokenSeparators={[","]}
+              />
+            </Form.Item>
+          )}
+
+          {selectedType === AttributeType.Slider && (
+            <>
+              <Form.Item
+                name={["criteria", "min"]}
+                label="Min Score"
+                rules={[
+                  { required: true, message: "Please enter a minimum score" },
+                ]}
+              >
+                <InputNumber min={0} max={100} style={{ width: "100%" }} />
+              </Form.Item>
+              <Form.Item
+                name={["criteria", "max"]}
+                label="Max Score"
+                rules={[
+                  { required: true, message: "Please enter a maximum score" },
+                ]}
+              >
+                <InputNumber min={0} max={100} style={{ width: "100%" }} />
+              </Form.Item>
+            </>
+          )}
+
           <Form.Item name="required" valuePropName="checked">
             <Checkbox>Required</Checkbox>
           </Form.Item>
