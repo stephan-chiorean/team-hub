@@ -8,9 +8,14 @@ import {
   List,
   Popconfirm,
   Divider,
+  Popover,
 } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
-import { DeleteOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  FileTextOutlined,
+  CloseOutlined,
+} from "@ant-design/icons";
 import {
   Attribute,
   AttributeSection,
@@ -37,6 +42,7 @@ const AttributesAssessment: React.FC = () => {
   });
 
   const [responses, setResponses] = useState<Record<string, any>>({});
+  const [notesVisible, setNotesVisible] = useState(false);
 
   useEffect(() => {
     // Simulate fetching attributes from an API or local storage
@@ -100,46 +106,8 @@ const AttributesAssessment: React.FC = () => {
           required: false,
           description: "Is the candidate a certified Scrum Master?",
         } as CheckboxAttribute,
-        {
-          section: AttributeSection.Qualifications,
-          attribute: "AWS Certified Solutions Architect",
-          type: AttributeType.Checkbox,
-          required: false,
-          description: "Does the candidate have an AWS certification?",
-        } as CheckboxAttribute,
-        {
-          section: AttributeSection.Qualifications,
-          attribute: "Google Cloud Certification",
-          type: AttributeType.Checkbox,
-          required: false,
-          description: "Has the candidate achieved Google Cloud certification?",
-        } as CheckboxAttribute,
       ],
-      [AttributeSection.Details]: [
-        {
-          section: AttributeSection.Details,
-          attribute: "Preferred Work Location",
-          type: AttributeType.Option,
-          required: false,
-          description: "Where does the candidate prefer to work?",
-          criteria: { options: ["Remote", "Hybrid", "On-site"] },
-        } as OptionAttribute,
-        {
-          section: AttributeSection.Details,
-          attribute: "Work Visa Status",
-          type: AttributeType.Checkbox,
-          required: false,
-          description: "Does the candidate require visa sponsorship?",
-        } as CheckboxAttribute,
-        {
-          section: AttributeSection.Details,
-          attribute: "Years of Experience",
-          type: AttributeType.Slider,
-          required: true,
-          description: "Rate the candidate's overall experience in years.",
-          criteria: { min: 0, max: 20 },
-        } as SliderAttribute,
-      ],
+      [AttributeSection.Details]: [],
     };
 
     setAttributes(fetchedAttributes);
@@ -180,9 +148,55 @@ const AttributesAssessment: React.FC = () => {
     navigate(`/decision/${candidateId}`);
   };
 
+  const notesContent = (
+    <div style={{ maxWidth: "300px", whiteSpace: "pre-wrap" }}>
+      <Typography.Paragraph>
+        Strengths:
+        <br />
+        - Knows how to communicate their thoughts
+        <br />
+        - Keeps composure under pressure.
+        <br />
+        <br />
+        Not sure why they keep mentioning blah blah. I would've done something
+        else
+        <br />
+        <br />
+        API Design
+        <br />- Shows command of the topic
+      </Typography.Paragraph>
+      <Button
+        type="default"
+        icon={<CloseOutlined />}
+        onClick={() => setNotesVisible(false)}
+        style={{ marginTop: "16px", width: "100%" }}
+      >
+        Close
+      </Button>
+    </div>
+  );
+
   return (
     <div style={{ padding: "24px", position: "relative", minHeight: "100vh" }}>
-      <Title level={2}>Attributes Assessment</Title>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <Title level={2}>Attributes Assessment</Title>
+        <Popover
+          content={notesContent}
+          title="Notes"
+          trigger="click"
+          open={notesVisible}
+          placement="leftTop"
+          overlayStyle={{ maxWidth: "350px" }}
+        >
+          <Button
+            type="default"
+            icon={<FileTextOutlined />}
+            onClick={() => setNotesVisible(true)}
+          >
+            View notes
+          </Button>
+        </Popover>
+      </div>
 
       {Object.entries(attributes).map(([section, attributeList]) =>
         attributeList.length ? (

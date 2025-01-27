@@ -9,6 +9,11 @@ import {
   BarChartOutlined,
   SettingOutlined,
   FileSearchOutlined,
+  AreaChartOutlined,
+  CloudOutlined,
+  DatabaseOutlined,
+  LikeOutlined,
+  GlobalOutlined,
 } from "@ant-design/icons";
 import { Link, useLocation } from "react-router-dom";
 import logoCrop from "../../assets/logoCrop.png";
@@ -54,35 +59,71 @@ const Sidebar = () => {
         <Menu.Item key="dashboard" icon={<DashboardOutlined />}>
           <Link to="/dashboard">Dashboard</Link>
         </Menu.Item>
+        <Menu.Item key="members" icon={<TeamOutlined />}>
+          <Link to="/members">Members</Link>
+        </Menu.Item>
         <Menu.SubMenu
-          key="team-management"
-          icon={<TeamOutlined />}
-          title="Team Management"
+          key="templates"
+          icon={<DatabaseOutlined />}
+          title="Templates"
         >
           <Menu.Item key="team-management">
-            <Link to="/team-management">View/manage team members</Link>
+            <Link to="/team-management">Interviews</Link>
           </Menu.Item>
           <Menu.Item key="roles">
-            <Link to="/roles">Roles</Link>
+            <Link to="/roles">1 on 1s</Link>
+          </Menu.Item>
+          <Menu.Item key="roles">
+            <Link to="/roles">Onboarding</Link>
+          </Menu.Item>
+          <Menu.Item key="roles">
+            <Link to="/roles">Career Development</Link>
           </Menu.Item>
         </Menu.SubMenu>
-        <Menu.Item key="projects" icon={<ProjectOutlined />}>
-          <Link to="/projects">Projects</Link>
+        <Menu.SubMenu
+          key="engagement"
+          icon={<LikeOutlined />}
+          title="Engagement"
+        >
+          <Menu.Item key="team-management">
+            <Link to="/team-management">Feedback</Link>
+          </Menu.Item>
+          <Menu.Item key="roles">
+            <Link to="/roles">Referrals</Link>
+          </Menu.Item>
+          <Menu.Item key="roles">
+            <Link to="/roles">Surveys</Link>
+          </Menu.Item>
+          <Menu.Item key="roles">
+            <Link to="/roles">Initiatives</Link>
+          </Menu.Item>
+        </Menu.SubMenu>
+        <Menu.Item key="interviews" icon={<FileSearchOutlined />}>
+          <Link to="/interviews">Interviews</Link>
         </Menu.Item>
         <Menu.Item key="candidates" icon={<UserAddOutlined />}>
           <Link to="/candidates">Candidates</Link>
         </Menu.Item>
-        <Menu.Item key="assessments" icon={<FileTextOutlined />}>
-          <Link to="/assessments">Assessments</Link>
+        <Menu.SubMenu
+          key="integrations"
+          icon={<CloudOutlined />}
+          title="Integrations"
+        >
+          <Menu.Item key="ats">
+            <Link to="/ats">ATS</Link>
+          </Menu.Item>
+          <Menu.Item key="workflows">
+            <Link to="/workflows">Workflows</Link>
+          </Menu.Item>
+          <Menu.Item key="destinations">
+            <Link to="/destinations">Destinations</Link>
+          </Menu.Item>
+        </Menu.SubMenu>
+        <Menu.Item key="jobs" icon={<GlobalOutlined />}>
+          <Link to="/jobs">Jobs</Link>
         </Menu.Item>
-        <Menu.Item key="score-overview" icon={<BarChartOutlined />}>
-          <Link to="/score-overview">Score Overview</Link>
-        </Menu.Item>
-        <Menu.Item key="decision" icon={<FileSearchOutlined />}>
-          <Link to="/decision">Decision</Link>
-        </Menu.Item>
-        <Menu.Item key="interviews" icon={<FileSearchOutlined />}>
-          <Link to="/interviews">Interviews</Link>
+        <Menu.Item key="analytics" icon={<AreaChartOutlined />}>
+          <Link to="/analytics">Analytics</Link>
         </Menu.Item>
         <Menu.Item key="settings" icon={<SettingOutlined />}>
           <Link to="/settings">Settings</Link>
