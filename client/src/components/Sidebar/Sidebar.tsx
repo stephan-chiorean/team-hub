@@ -28,7 +28,6 @@ const Sidebar = () => {
     "assessments",
     "candidates",
     "score-overview",
-    "decision",
   ].includes(path)
     ? "interviews"
     : path || "dashboard";
