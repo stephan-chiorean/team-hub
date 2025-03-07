@@ -21,6 +21,14 @@ import Referrals from "@/pages/Referrals";
 import Sourcing from "@/pages/Sourcing";
 import AddReferral from "@/pages/AddReferral";
 import Attributes from "./pages/AttributesAssessment";
+import ATS from "./pages/ATS";
+import Integrations from "./pages/Integrations";
+import Integration from "./pages/Integrations/Integration";
+import Jobs from "./pages/Jobs";
+import Members from "./pages/Members";
+import JobConfig from "./pages/JobConfig";
+import Job from "./components/Jobs/Job";
+import Templates from "./pages/Templates";
 
 const { Content, Footer } = Layout;
 
@@ -50,6 +58,7 @@ function App() {
             >
               <Routes>
                 <Route path="/dashboard" Component={Dashboard} />
+                <Route path="/members" Component={Members} />
                 <Route path="/interviews" Component={Interviews} />
                 <Route path="/documentation" Component={Documentation} />
                 <Route path="/team-management" Component={TeamManagement} />
@@ -76,12 +85,21 @@ function App() {
                   path="/interviews/:candidateId/attributes"
                   Component={Attributes}
                 />
+                <Route path="/templates" Component={Templates} />
+                <Route path="/jobs" Component={Jobs} />
+                <Route path="/jobs/:jobId" Component={JobConfig} />
+                <Route path="/integrations" Component={Integrations} />
+                <Route
+                  path="/integrations/:integrationId"
+                  Component={Integration}
+                />
                 <Route path="/decision/:candidateId" Component={Decision} />
                 <Route path="/reports-analytics" Component={ReportsAnalytics} />
                 <Route path="/settings" Component={Settings} />
                 <Route path="/referrals" Component={Referrals} />
                 <Route path="/sourcing" Component={Sourcing} />
                 <Route path="/add-referral/:team" Component={AddReferral} />
+                <Route path="/ats" Component={ATS} />
                 <Route path="/" Component={Dashboard} />
               </Routes>
             </Content>
